@@ -1,0 +1,25 @@
+{
+  "title": "Report on regular Hadamard matrices of order 11",
+  "description": "<p>Preprint (80 pages, PDF and LaTeX source), together with its computational code, retained data and verification programs.</p><p>We obtain finite affine covers, up to ordinary equivalence, of all homogeneous 3-by-11 regular partial Hadamard matrices. The sharp maximum dimensions of the AAA, BBB, CCC, DDD, EEE and FFF branches are 0, 3, 4, 3, 4 and 6. The six-dimensional FFF families have two explicit normal forms and generically admit no regular fourth row, which is the main theorem of the report. We also study the Fourier branch, maximal five-row families and further extension problems, notably in the DDD case. The proofs retain arbitrary unit phases and use exact, reproducible finite computations. The full order-11 classification remains open.</p>",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "creators": [
+    {
+      "name": "Banica, Teodor",
+      "affiliation": "CY Cergy Paris Université",
+      "orcid": "0000-0003-4680-0364"
+    },
+    {
+      "name": "GPT"
+    }
+  ],
+  "keywords": [
+    "complex Hadamard matrices",
+    "regular Hadamard matrices",
+    "partial Hadamard matrices",
+    "Fourier matrices",
+    "Butson matrices",
+    "affine families",
+    "exact computation"
+  ]
+}
