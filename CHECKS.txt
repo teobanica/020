@@ -1,0 +1,61 @@
+PACKAGE CHECKS — 4 NOVEMBER 2026
+
+Checks were run from a fresh copy of the reorganized folder. Its work
+directory contained only data and sources prepared by the new root run.py.
+No calculation loaded files from the original package directory.
+
+Integrity and preparation:
+  - All 150 component source files match their original ZIP bytes.
+  - Both earlier exploratory scripts are retained unchanged.
+  - All 5245 retained data members were unpacked and matched by size/hash.
+  - All were also compared with the original ZIP: 5244 are byte-identical;
+    one earlier verification report differs only in elapsed_seconds.
+  - All 86 Python source files passed syntax parsing.
+  - Python imports were checked: standard library and local modules only.
+  - The launcher rejected an unknown component, implicit bulk regeneration,
+    a work directory inside the delivered folder, and disabled assertions.
+  - Final folder checksums and ZIP member integrity were checked.
+  - Testing found a README dependency in the G verifier's hash list.
+    That original README was restored to its dataset and the check rerun;
+    its mathematical source and internal integrity check stayed unchanged.
+
+Verification through the new launcher (all passed):
+  a_branch             0.14 seconds
+  a_square             7.80 seconds
+  bbb                  2.66 seconds
+  ccc                 46.61 seconds
+  ddd                 28.32 seconds
+  eee                 47.54 seconds
+  fff                  4.92 seconds
+  mixed                4.22 seconds
+  h_family            17.08 seconds
+  g_family            32.28 seconds
+  ddd_finite          44.41 seconds
+  ddd_generic          0.08 seconds
+  ddd_real             7.15 seconds
+  ddd_imag             8.98 seconds
+  ddd_120             10.66 seconds
+  early_sixth          0.13 seconds
+  early_circles      113.35 seconds
+  early_two           14.53 seconds
+  early_checks         2.01 seconds
+
+Complete regeneration pipelines exercised (all passed):
+  a_branch             2.62 seconds
+  a_square             8.09 seconds
+  bbb                 12.06 seconds
+  mixed                9.22 seconds
+  early_sixth          5.57 seconds
+
+Times are observations on this runtime, not laptop estimates.
+
+Verification scope is itemized in README.txt. EEE verification reruns its
+self-checking census. FFF verification checks saved report agreement,
+retained affine families and examples; its full finite-ring and canonical
+searches were not rerun. Most other verification commands check delivered
+identities and certificates. The five regeneration commands listed above
+ran their complete original pipelines. The entire collection of exhaustive
+searches was not regenerated as part of this organizational cleanup.
+
+The code and tests preserve the distinction between a certificate check,
+an exhaustive search, a restricted classification and an open problem.

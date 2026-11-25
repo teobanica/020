@@ -1,0 +1,47 @@
+FIRST CODE CLEANUP — 4 NOVEMBER 2026
+
+The original ZIP contained 5,549 files with an expanded size of 2.48 GB.
+The new delivered folder has 195 files, occupies about 123 MB, and has no
+individual file larger than 9.3 MB. All mathematical source files are small;
+the largest files are compressed retained data.
+
+This is a source-and-data organization pass. The 150 mathematical source files
+from all 18 components and the two earlier exploratory scripts are preserved
+byte for byte. The added root run.py is a small preparation/dispatch program.
+No mathematical algorithm or claimed classification result has been changed.
+
+The folder is shallow: one component directory, occasionally with one source
+subdirectory. The long component names survive in the prepared work directory
+so existing imports, includes and original reproduction drivers still work.
+
+Data are stored in 36 ordinary compressed tar archives. They retain 5,245
+inputs, tables, certificates, summaries and execution records, with a total
+expanded size of 1.45 GB. The visible file count describes the distributed
+source folder; unpacking data for calculations creates more files in the
+separate work directory. It is not a claim that the mathematical evidence
+has been reduced to 195 elementary records.
+
+The finite-DDD data are grouped as labels plus 18 batches of two pair groups.
+All other components have one data archive. The preparation command verifies
+every recovered member by size and SHA-256. Independent implementations and
+their retained comparison data have been preserved.
+
+Removed from the delivered working folder: caches, temporary output copies,
+earlier standalone exposition, repeated package-level history and old root
+drivers. The original package remains the recovery source for that history.
+The component notes are consolidated in NOTES.txt, with their historical
+section numbers and file references explicitly marked as such.
+The G-family dataset also retains its original README because the original
+verifier includes that file in its internal checksum check.
+
+The root README gives current paper-section mappings, requirements, commands
+and verification scope. Python 3.10 is the minimum for all existing verifiers
+because the level-120 code uses int.bit_count(). Most Python code needs only
+the standard library; the existing C++ and Node.js requirements are stated.
+
+The manuscript and parked explanatory maps were not edited in this pass.
+Further cleanup can follow the mathematics: retire superseded pilots, simplify
+individual sources, unify genuinely shared utilities and prepare the final
+publication package. Keep independent audits independent.
+
+See CHECKS.txt for the checks performed on this reorganized package.
