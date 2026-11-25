@@ -1,0 +1,2551 @@
+ORIGINAL COMPONENT NOTES
+
+These notes preserve the original calculation descriptions and commands.
+Old manuscript titles, section numbers, archive claims and exposition paths
+are historical. Use README.txt and regular11.tex for the current organization.
+run.py prepare restores the original runtime paths in a separate work folder.
+
+
+========================================================================
+a_branch / n11_A_branch
+========================================================================
+REGULAR 3 x 11 MATRICES WITH AN 11-CYCLE QUOTIENT
+GPT and Teo, 26 October 2026
+
+Scope
+-----
+This archive gives an exhaustive redundant parametrization of the branch
+with an 11-cycle quotient. It does NOT classify the 35 chosen profile triples
+without an 11-cycle, and does not study completion to 11 x 11 or reduce the
+resulting presentations to full Hadamard equivalence classes.
+
+Profiles: A=11; B=7+2+2; C=5+3+3; D=5+2+2+2;
+E=3+3+3+2; F=3+2+2+2+2.
+The possible chosen triples containing A are exactly AAA, AEE, AEF, AFF.
+The mixed branch consists of six support graphs, 16 retained colorings, and
+10104 normalized finite field label assignments. Restore the 10 nonzero
+field scalings to cover every presentation. The disconnected FF graph has
+one arbitrary relative component phase. The finite lists have redundancy.
+
+Read n11_11cycle_branch.pdf for the proof and precise normalization.
+
+Reproduce (Python 3.9+; standard library only)
+--------------------------------------------
+python3 compute.py
+python3 enumerate_labels.py
+python3 verify.py
+
+Optional independent full Cartesian-product verification (C++17)
+--------------------------------------------------------------
+g++ -O3 -std=c++17 brute_labels.cpp -o brute_labels
+./brute_labels < brute_input.txt
+
+Files
+-----
+compute.py: cycle multiset matching, graph/color census, witness construction.
+enumerate_labels.py: complete finite label enumeration.
+verify.py: independent graph generation by degree sequences; edge-color
+constraints; all certificate checks; integer cyclotomic division including
+every coefficient of the symbolic q-family.
+results.json: six graphs, all retained colorings, and one witness per graph.
+label_enumeration.json: all normalized labels and the exact gauge choices.
+verification.json: independent census and certificate check results.
+brute_input.txt: exact inputs for the independent C++ count.
+independent_brute_counts.json: observed C++ counts and search sizes.
+affine_family.json: explicit family with exponents, q supports, and cycles.
+n11_11cycle_branch.tex and .pdf: mathematical working note.
+
+The 3441 normalized AAA maps were verified in the earlier complete-mapping
+calculation; the present scripts concern the mixed AEE/AEF/AFF branch.
+
+
+========================================================================
+a_square / n11_A_completion
+========================================================================
+THE 11-CYCLE BRANCH AT ORDER 11
+GPT and Teo, 26 October 2026
+
+Theorem
+-------
+Every regular complex Hadamard matrix of order 11 with an 11-cycle row
+quotient is equivalent to F_11. Regular means that every row quotient is a
+multiset union of rotated prime-root cycles.
+
+Proof components
+----------------
+1. Elementary cycle-incidence graphs show that every row quotient in this
+   branch has only 2-, 3-, and 11-cycles. Arbitrary continuous phases are
+   allowed. No finite sampling or root-order hypothesis is imposed.
+2. A group-algebra argument over Eisenstein integers proves a general
+   rigidity proposition for primes p>3: with cycle lengths restricted to
+   2, 3, and p, one p-cycle row quotient forces every row quotient to be a
+   p-cycle. This excludes all mixed square completions.
+3. Exact finite computation of the remaining BH(11,11) case gives Fourier
+   as the unique completion after fixing the first two rows.
+
+The no-11-cycle branch is not addressed here. The general rigidity lemma
+alone does not assert uniqueness of BH(p,p) for arbitrary primes.
+
+Computation
+-----------
+3441 normalized candidate rows; 2016 compatibility edges.
+Degree distribution: degree 0: 2640; degree 3: 660;
+degree 8: 135; degree 162: 6.
+There are nine Fourier candidate rows. Every other vertex is excluded
+from a 9-clique either by degree <8 (3300 vertices), or by degree exactly
+8 and a missing edge between two neighbors (132 vertices).
+
+Reproduce with Python 3 and a C++17 compiler
+------------------------------------------
+python3 generate_rows.py
+g++ -O3 -std=c++17 complete.cpp -o complete
+./complete rows.txt completions.json
+python3 verify.py
+
+Python uses only its standard library. The provided rows.txt and
+completions.json allow verify.py to be run on its own; it independently
+regenerates all candidate rows by checking all 10! normalized permutations,
+rebuilds the graph, and verifies the local exclusion proof.
+
+Files
+-----
+n11_A_completion.pdf / .tex: full working proof, including the structural
+  prime-order rigidity lemma and exact computation explanation.
+generate_rows.py: backtracking generation of all candidate rows.
+rows.txt: entire normalized row list, indexed from zero after the header.
+row_generation.json: count, SHA-256 of rows.txt, Fourier row indices.
+complete.cpp: independent C++ graph construction and exhaustive 9-clique
+  search using a proper-coloring upper bound.
+completions.json: observed C++ result (one Fourier completion).
+verify.py: independent full permutation enumeration, difference-set graph,
+  degree/missing-edge exclusion proof and small-neighborhood clique checks.
+independent_verification.json: verification summary.
+exclusion_certificate.json: all graph edges and all local exclusions.
+
+Counts of candidate rows and partial extensions are normalized
+representations, not Hadamard equivalence classes. Partial extension-size
+claims in the report concern extensions in which every quotient is an
+11-cycle. Mixed partial extensions are excluded at square size by the
+structural proof.
+
+
+========================================================================
+bbb / n11_noA_BBB
+========================================================================
+BBB THREE-ROW SUPPORT AND PHASE REDUCTION AT WIDTH 11
+===================================================
+
+B means the chosen quotient profile 7+2+2.
+
+RESULT
+Every BBB 3x11 partial Hadamard matrix has an affine presentation with at
+most three parameters and a seed over the 28th roots. The dimension bound
+is attained. This is a finite normal form and exhaustive support feasibility
+check, not a list of inequivalent matrices or a square completion theorem.
+
+SCOPE OF FINITE LABEL DATA
+All valid prime-7 labels are specified by explicit finite-field equations
+and three all-different conditions in the PDF. We store ONE witness per
+feasible support pair, not every label assignment. Field scalings used to
+normalize the feasibility search are NOT silently taken as equivalences.
+Restore all six nonzero common scalings when covering all label assignments.
+
+REPRODUCE
+    python3 run.py
+Requires Python 3 standard library and g++ supporting C++17.
+
+EXPECTED COUNTS
+990 support partitions; 10 relative support orbits of sizes
+1,2,28,56,42,84,84,168,420,105.
+9900 reduced support pairs; 27 fail the common-column condition.
+9873 torus systems checked independently by integer minors and finite grid.
+2995 consistent support pairs, 3210 collapsed phase components.
+424 pairs cannot lift, with forced-equal-label certificates over F_7.
+2571 pairs have explicit valid root-label witnesses.
+2776 phase components have lifts:
+  dimension 0: 1788
+  dimension 1: 856
+  dimension 2: 128
+  dimension 3: 4
+These numbers count REDUNDANT PRESENTATIONS, not equivalence classes.
+Zero-dimensional presentations are not asserted globally isolated.
+
+VERIFICATION
+The main solver uses integer-unimodular elimination on the continuous torus.
+A separate C++ program bounds Smith invariants using exact integer minors
+and enumerates the eighth-root grid. The largest nonzero Smith invariant
+is 2, so rational right-hand sides with denominator 2 force every connected
+component to meet the quarter-root grid. The verifier checks coverage on
+the larger eighth-root grid, primitive bases, and all affine equations.
+Prime-7 infeasibility uses exact linear equations forcing repeated labels.
+Every feasible label witness is checked directly; no floating point is used.
+Each of the 2776 lifted affine families has its cycles checked symbolically.
+
+FILES
+collapse.py, torus_solver.py: support orbits and continuous phase systems.
+check_collapse.cpp, prepare_check.py: independent exact grid and Smith bounds.
+linear_check.py: F_7 linear normal forms and forced collisions.
+prepare_lift.py, lift.cpp: finite-field existence search and certificates.
+verify.py: component coverage, direct witnesses, and symbolic cycle checks.
+run.py: reproduce all computations.
+JSON files: retained data and check results.
+n11_BBB_reduction.tex/pdf: proof and exact scope.
+
+
+========================================================================
+ccc / n11_noA_CCC
+========================================================================
+CCC THREE-ROW SUPPORT AND PHASE REDUCTION AT WIDTH 11
+==================================================
+
+C means the chosen quotient profile 5+3+3.
+
+RESULT
+Every CCC 3x11 partial Hadamard matrix has an affine presentation with at
+most four parameters and a seed over the 30th or 45th roots. Four parameters
+are attained; explicit seeds genuinely requiring orders 30 and 45 are given.
+Exactly 325 chosen-support classes are feasible (among 1617 classes).
+These are NOT matrix-equivalence classes, and zero-dimensional presentations
+are NOT asserted to be globally isolated. No square-completion claim is made.
+
+REPRODUCE
+    python3 run.py
+Requires Python 3 standard library and g++ supporting C++17. The proof PDF
+is authored in LaTeX; rebuilding it additionally requires pdflatex.
+
+EXPECTED COUNTS
+4620 support partitions, 21 relative orbits, 97020 support presentations.
+Quintic labels: 52810 linear exclusions, 100 further exhaustive exclusions,
+44110 feasible with directly checked witnesses. The independent exclusion
+check for the 100 cases tests all 625 points of each linear solution space.
+Triangle orientations remove another 24578 presentations, leaving 19532.
+These yield 325 support classes, by affine dimension:
+    d=0: 262, d=1: 46, d=2: 14, d=3: 2, d=4: 1.
+Of those classes, 322 have trivial kernel torsion, 1 has order 2, 2 have order 3.
+The 123300 ternary phase presentations, before support deduplication, have
+dimensions: 105096, 15412, 2616, 172, 4 for d=0,1,2,3,4 respectively.
+
+FINITE LABEL SCOPE
+Only ONE quintic witness per feasible support presentation is stored.
+The complete normal form permits EVERY solution of the quintic equations
+and permutation constraints in the PDF. Field scaling used in existence
+tests is not silently regarded as Hadamard equivalence.
+
+VERIFICATION
+phase_check.cpp computes ranks and Smith bounds from exact integer minors.
+three.cpp supplies full unimodular matrices U,V with U A V diagonal.
+verify.py checks both determinants are +/-1 and verifies that identity,
+all triangle orientation tests, quintic witnesses and exclusions, and all
+123300 affine presentations symbolically. No numerical tolerances are used.
+The support tensor canonicalization exhausts all 48 permitted transforms.
+
+FILES
+supports.py/supports.json: support partitions, relative orbits, phase matrices.
+phase_check.cpp/phase_check.json: independent minor certificates.
+prepare_five.py, five.cpp, five.json: quintic-label feasibility and witnesses.
+five_verify.py: independent linear-space enumeration for exclusions.
+prepare_three.py, three.cpp, three.json: exact phase transformations and signs.
+verify.py, verification.json: full exact verification and counts.
+support_classes.py/support_classes.json: canonical chosen-support classes.
+examples.json: seeds with root orders 15,30,45 and cycle certificates.
+run.py: full reproduction driver.
+n11_CCC_reduction.tex/pdf: theorem, proof, normal form and scope.
+
+The large text inputs are regenerated by run.py and need not be distributed.
+
+
+========================================================================
+ddd / n11_noA_DDD
+========================================================================
+DDD THREE-ROW SUPPORT AND PHASE REDUCTION AT WIDTH 11
+==================================================
+D means the chosen quotient profile 5+2+2+2.
+
+RESULT
+Every DDD 3x11 matrix has an affine presentation with at most 3 parameters
+and a seed over the 40th roots. The dimension bound is attained. Exactly
+one feasible support class has a Smith invariant 4 and needs 40th-root seeds;
+the other classes admit 20th-root seeds. An explicit primitive 40th-root
+cross ratio proves that this root bound cannot be reduced globally.
+Any partial Butson representative of a DDD triple has root order divisible
+by 20, as proved and certified in the PDF.
+
+REPRODUCE
+    python3 run.py
+Requires Python 3 standard library and g++ supporting C++17.
+Rebuilding the proof PDF additionally requires pdflatex.
+
+COUNTS
+6930 support partitions, 26 relative orbits, 180180 support presentations.
+Binary phase consistency leaves 15968 presentations.
+Quintic label feasibility excludes 1348 by exact linear certificates,
+leaving 14620 presentations with directly checked witnesses.
+The 29762 phase components have dimensions:
+    d=0: 17288, d=1: 10902, d=2: 1538, d=3: 34.
+Full chosen-support classification gives 3300 classes, of which 452 are
+feasible, with dimensions:
+    d=0: 218, d=1: 190, d=2: 41, d=3: 3.
+These are SUPPORT classes, NOT matrix equivalence classes.
+Zero-dimensional chosen presentations are NOT asserted globally isolated.
+
+FINITE LABEL SCOPE
+Only ONE quintic witness per feasible support presentation is stored.
+The complete normal form permits EVERY solution of the quintic equations
+and permutation constraints. Field scaling used for existence testing is
+not silently regarded as a Hadamard equivalence.
+
+VERIFICATION
+phases.cpp supplies exact unimodular Smith transformations and independently
+checks rank, torsion order and largest invariant by gcds of integer minors.
+verify.py checks determinants and transformation identities independently,
+all quintic witnesses or linear exclusions, and all 29762 affine phase
+presentations symbolically. It also checks the half-integral obstruction.
+classes.cpp canonicalizes support tensors; verify_classes.py independently
+exhausts the full 1296-element symmetry group and accounts for every input.
+No floating point is used.
+
+FIVE-ROW SURVIVAL
+extension_5x11.json contains an exact regular 5x11 seed over twentieth roots,
+constructed from F5 and five rows of a regular 6x6 quaternary Hadamard matrix.
+Its ten row quotients are all 5+2+2+2. Four independent relative row phases
+between the two blocks give an affine 5x11 family. This demonstrates survival
+past four rows; it is not a square completion.
+
+FILES
+supports.py/supports.json: support partitions and equations.
+phases.cpp/phases.json: full integer phase certificates.
+prepare_five.py, five.cpp, five.json: quintic feasibility and witnesses.
+five_verify.py: independent linear-algebra checks over F5.
+verify.py/verification.json: exact verification and phase counts.
+prepare_classes.py, classes.cpp, support_classes.json: support classification.
+verify_classes.py/classes_verification.json: independent orbit verification.
+check_simple_family.py/simple_family.json: displayed 3-parameter family.
+examples.json: root-order 20 and 40 examples.
+extension_5x11.json: the explicit 5-row construction and cycle certificates.
+n11_DDD_reduction.tex/pdf: theorem, proof and scope.
+run.py: full reproduction driver.
+
+Large text inputs are regenerated by run.py and need not be distributed.
+
+
+========================================================================
+fff / n11_noA_FFF
+========================================================================
+FFF at width 11 — exact chosen-support reduction
+GPT and Teo, 27 October 2026
+
+Main result
+-----------
+Every regular 3-by-11 triple with chosen quotient profile 3+2+2+2+2
+is covered by the finite affine normal form. Dimensions are 2 through 6;
+seed orders are 6, 12 or 24. There are 19,841 feasible chosen-support
+classes, with dimension counts 17,253; 2,394; 175; 17; 2.
+
+These are support classes, not inequivalent matrices. Different supports
+and affine pieces can overlap. No extension to four rows is claimed.
+
+Reproduce
+---------
+Requirements: Python 3, Node.js 18+, and g++ with C++17 support.
+No third-party Python or JavaScript packages are required.
+
+    python3 run.py
+
+This regenerates all support partitions, performs and certifies integer
+Smith reductions, checks feasibility independently over Z/8 and Z/9,
+canonicalizes supports, verifies full-group minima and every input's
+transformation witness, then symbolically verifies all affine components
+of the chosen class representatives. All substantive computations in
+this pipeline were executed successfully for this deliverable.
+
+To cross-check the included verification reports without rerunning:
+
+    python3 run.py --check-existing
+
+The full census creates additional intermediate files in this directory.
+Those large files and platform-specific compiled executables are omitted
+from this archive; the program regenerates them.
+
+Data format
+-----------
+fff_supports.json:
+  base: first support P
+  partitions: all 17,325 partitions in lexicographic order
+  orbits: 44 representatives for Q under the stabilizer of P
+
+fff_classes.json:
+  classes: 19,841 feasible classes. vi indexes orbits and wi indexes
+  partitions. tensor is a 125-character string of counts, in order
+  25*i+5*j+k. Index zero on each axis is the triangle. The four other
+  blocks are pairs. dimension is 8-rank(A); torsion is product(d_i);
+  orientations is the number of feasible choices among the 8 sign triples.
+  presentations and raw_tensors record coverage before canonicalization.
+  Canonical form first minimizes a two-axis marginal and then the tensor.
+
+affine_certificates.json:
+  One certificate for each class in the same order. U*A*V is rectangular
+  diagonal with the listed diagonal, rank and allowed orientations.
+  Bit j of an orientation mask gives sigma_j=+1 if set, -1 otherwise.
+  Here j=0,1,2 refers to P,Q,R. The phase formula and reconstruction are
+  equations (3)-(4) of the accompanying note.
+  All torsion branches are 0 <= k_i < diagonal[i], with 8-rank free phases.
+
+verification.json:
+  concise combined report; the other *_verification.json files give
+  independent feasibility, canonical coverage, symbolic affine and
+  displayed-example checks.
+
+fff_summary.json:
+  raw support census, all integer Smith types, all seed-order counts,
+  selected explicit examples and exact-arithmetic audit.
+
+Sources
+-------
+fff.js                 support census, phase equations, Smith certificates
+classes.cpp            optimized support canonicalization and witnesses
+verify_rings.cpp       independent finite-ring feasibility
+verify_classes.cpp     full-group minima and transformation-witness check
+verify_families.js      every retained affine component, checked symbolically
+verify_examples.py     six-parameter family and order-24 seed, exactly checked
+run.py                 reproduction driver
+n11_FFF_reduction.tex   mathematical proof source
+
+SHA256SUMS.json records hashes of the archived files (apart from itself).
+
+
+
+========================================================================
+mixed / n11_mixed_pilots
+========================================================================
+CCD and CDF mixed pilots at width 11
+GPT and Teo — 27 October 2026
+
+Results
+-------
+CCD: an explicit three-parameter family, every member of which extends
+to the displayed six-parameter regular 5-by-11 family.
+Generically its ten three-row submatrices have types CCD (six) and CCC (four).
+
+CDF: an explicit one-parameter family over a 30th-root seed. At the
+displayed seed and at generic parameter values, the three quotients
+admit only C, only D and only F respectively.
+
+The exact census is restricted to coincident pentagon supports:
+  CCD: all three chosen pentagons occupy columns 0,...,4.
+  CDF: the C and D pentagons occupy columns 0,...,4.
+These are not classifications of the unrestricted CCD/CDF cases.
+Other mixed types and extensions of the CDF family were not tested.
+
+Reproduce
+---------
+Python 3, standard library only:
+
+    python3 run.py
+
+This runs pilots.py and verify.py. The entire driver was executed
+successfully. All arithmetic is exact; no floating-point tolerance is used.
+
+CCD census
+----------
+150 chosen support pairs, 96 feasible.
+684 continuous phase components before pentagon labels:
+  648 of dimension two, 36 of dimension three.
+Each permits the three listed normalized pentagon permutations, for
+2052 affine descriptions. All seeds lie in the 30th roots.
+These counts are redundant presentations, not equivalence classes.
+
+The independent verifier checks all 3,110,400 sixth-root grid points,
+the exact solution coverage, dimensions and primitive parameter bases.
+The proof of continuous completeness is the exhaustive unimodular
+branch procedure, not the grid check alone.
+
+CDF census
+----------
+Two representatives for the D pair matching, according to whether one
+or three pairs cross between the C triangles. There are 1800 F supports
+per representative, 24 pentagon permutations and 8 triangle orientations.
+All 691,200 choices are checked.
+480 support presentations and 1920 label/orientation choices survive.
+The three-crossing case is impossible; the note supplies a short proof.
+Every feasible case has one continuous phase. After fixing that phase
+at the seed and removing identical ordered seeds, 168 seeds remain.
+No full monomial-equivalence reduction is claimed.
+
+Data
+----
+ccd_common_pentagon.json:
+  Each family stores its two v-triangles Q, the three quotient pairs R,
+  the modulus, u seed exponents U and v's last six exponents V_last6.
+  For each allowed_fifth_permutations entry pi, v's first five exponents
+  are modulus*pi[j]/5. Integer parameter exponents are in basis_U and
+  basis_V. A row entry is exp(2*pi*i*exponent/modulus) times the
+  corresponding parameter monomial.
+
+cdf_common_pentagon.json:
+  Each family stores two complete exponent rows U,V modulo 30 and its
+  cycle supports Q,R. Multiply the last six entries of both rows by one
+  common unit-modulus parameter. The first row is all ones.
+  The overlap flags concern alternative C/D decompositions of the
+  six-column residual blocks for a generic parameter.
+
+verification.json:
+  Independent counts, exact cycle covers of the strict CCD and CDF
+  examples, and the five-row extension summary.
+
+five_row_family.json:
+  Five complete exponent rows modulo 30 and integer coefficient vectors.
+  The six parameters are ordered (a,b,s,t,p,q). The generic edge profiles
+  and all ten explicit cycle certificates are included.
+
+The mathematical note is n11_CCD_CDF_pilots.tex; its PDF is supplied
+separately. SHA256SUMS.json gives hashes of all other files in the archive.
+
+
+
+========================================================================
+h_family / n11_DDD_full_family
+========================================================================
+FULL FOUR-PARAMETER FIVE-ROW DDD FAMILY
+Companion to paper-14, Section 12.5, 31 October 2026
+
+RESULT AND SCOPE
+For every (t1,t2,t3,t4) on the full unit four-torus, the specified
+5 x 11 family has no regular sixth row. The seed is in seed.json.
+This is a uniform extension obstruction for this family, not a claim
+that every five-row DDD configuration has been classified.
+
+REPRODUCE
+    python3 run.py
+Requires Python 3.10+ standard library and a C++17 compiler (g++).
+No network, numerical algebra, random search or floating-point test.
+The driver builds six executables, runs all five initial profiles in
+parallel for each implementation, refines every retained family and
+runs the two-variable filters. It finally runs the separate verifier.
+Expect minutes to tens of minutes, depending on hardware.
+The command overwrites generated outputs in primary/ and audit/.
+
+CHECK DELIVERED DATA
+    python3 verify.py
+This checks the seed cycle certificates, count formulas, agreement of
+structural census totals, family accounting and all saved point
+rejections. It does not replace the full exhaustive rerun of run.py.
+
+FINITE REDUCTION
+There are 1,480,490 normalized first-quotient presentations B--F.
+A new A quotient is impossible by the paper's A-containing triple
+classification, because every old quotient has a chosen D cover.
+For each first presentation, search.cpp enumerates complete cycle
+covers against old row 1 with q=conj(t1) unrestricted. Graph edges have
+u_b/u_c=q^d*zeta420^v, with d in {-1,0,1}. Tree integration either
+leaves q free or fixes it by q^d=zeta420^v with 1<=|d|<=5.
+All fixed values belong to mu25200.
+
+For any proposed row x, eliminating each old multiplier yields
+|sum_{j<5} x_j conj(H0[r,j])|^2 =
+|sum_{j>=5} x_j conj(H0[r,j])|^2, for r=1,...,4.
+One-phase rows yield degree <=8 over Q(zeta420), or degree <=2 over
+Q(zeta25200). FULL REGULARITY, together with the finite torus cover,
+forces every finite phase projection to consist of torsion points.
+The resulting orders divide L=352800 (the latter case even 50400).
+This bound is a conclusion, not a hypothesis imposed on the family.
+An identically zero polynomial case is retained, not discarded.
+
+The main splitting prime is 1764001; the audit uses 2116801.
+Both have L | (p-1). GCDs with Z^L-1 give complete candidate root
+lists under the specified embedding. A modular candidate need not
+be an actual characteristic-zero orthogonal row. Every candidate
+surviving the modular norms is rejected by exact cycle-cover tests.
+For a fixed root row, a mixed-block cycle fixes the old multiplier
+to one of at most 390 roots; block-separated covers allow multiplier
+1. Thus at most 391 choices suffice even though the original old
+multiplier could have been arbitrary on the unit circle.
+
+RETAINED FAMILIES
+refine.cpp normalizes component phases, removes a q variable if it
+disappears from the row, and imposes the next old-row cycle cover when
+needed. It checks all coefficient-conductor assumptions. A common
+suffix-phase change is allowed only when every original row-zero
+cycle stays inside one of the 5/6 column blocks. Every other family
+is retained explicitly. The primary run reaches 240 two-variable
+families of bidegree at most (2,2). All are excluded by resultant
+torsion-GCD checks; no family or point remains unresolved.
+
+ALTERNATIVE IMPLEMENTATION
+With -DAUDIT the component uses a second prime, canonical component
+potentials instead of a tree union-find, coefficient convolution for
+norm polynomials, verified polynomial-division identities, a separate
+unknown-multiplier cycle recursion for fixed points, direct Sylvester
+determinants and reversed monomial order in the span calculation.
+Both complete runs agree on first-presentation counts, complete-cover
+counts and dimension distributions. Modular survivor counts can
+differ between primes and are not classification invariants.
+verify.py separately constructs every possible prime cycle of each
+saved fixed row using integer residues, then tests its covers.
+
+FILES
+common.hpp: shared exact arithmetic; alternative routines selected
+            by -DAUDIT. No external libraries.
+search.cpp: exhaustive first-presentation and next-cover enumeration.
+refine.cpp: phase normalization and additional complete cycle covers.
+bivariate.cpp: exact two-variable resultant filters.
+run.py: full rebuild and reproduction.
+verify.py: independent integer checks of delivered outputs.
+seed.json: exponent matrix and all ten old D cycle certificates.
+primary_summary.json, audit_summary.json: complete run totals.
+verification.json: structural agreement and final checked counts.
+provenance/: original first-scan source and execution history before
+            shared arithmetic was factored into common.hpp.
+primary/{B,C,D,E,F}/, audit/{B,C,D,E,F}/: full retained records and logs.
+
+DATA CONVENTIONS
+Columns and old rows are numbered from zero. M=420, L=352800.
+inputs.txt: original presentation ID, profile, 11 block indices,
+            then 11 exponents modulo M.
+families.txt FIXED: ID, number of components, FIXED, q exponent mod L,
+            then 11 (component index, coefficient exponent mod L) pairs.
+families.txt FREE: ID, number of components, FREE, then one triple
+            (component root, q power, exponent mod M) per original block.
+refine_unresolved.txt GENUINE_Q_FREE: ID, type, active old row,
+            component count, then 11 (group, q power, exponent mod L)
+            triples. The primary run has 240 such two-variable records.
+points.txt, refine_points.txt, bivariate_points.txt: ID, saved q,
+            11 row exponents mod L, success flag, four multiplier slots.
+            All success flags are zero. Slots after the first failed
+            old-row test are unused and must not be read as witnesses.
+bivariate_unresolved.txt: empty in both completed runs.
+
+Counts are labelled presentations and recursion states, with possible
+repetitions, not ordinary matrix-equivalence classes. See the full
+paper for proofs of coverage, normalization and the root-order bound.
+
+
+========================================================================
+g_family / n11_DDD_three_parameter_five
+========================================================================
+N=11: an explicit three-parameter five-row family, uniformly maximal
+=================================================================
+
+Result (paper-16, Section 12.7, Theorem 12.19):
+G(a,b,c) is a regular 5 x 11 matrix for all unit a,b,c and has NO
+regular sixth row at any parameter value. The proof includes exceptional
+tori, translated tori and their torsion components. G(1,1,1) has minimal
+Butson level 60. No numerical phase samples enter the exclusion.
+
+Scope:
+The first three rows form one labelled dimension-three presentation from
+DDD support class 3286. This package settles the displayed FIVE-ROW
+family. It does not classify all extensions of its three-row submatrix,
+all label choices of support class 3286, or all positive-dimensional DDD
+families. The additional fixed rows impose essential conditions.
+
+Requirements: Python 3 standard library; g++ with C++17 support.
+
+Commands, from this directory:
+  python3 verify.py
+      Verify saved symbolic families, seed cycles, minimal seed level,
+      counts, batch accounting, file integrity and recorded audit hashes.
+      This is an identity/certificate check; it does not independently
+      regenerate the completeness calculation.
+  python3 run.py --workers 2
+      Regenerate every primary/audit first-presentation batch, the fixed
+      CCC core list and both complete character refinements. Work files
+      are written under regenerated/, without replacing delivered data.
+      Complete validated batches can be resumed. Expect substantial work.
+  python3 run.py --stage refine
+      Use the delivered COMPLETE fixed-core list and independently repeat
+      both parameter-dependent refinements. This omits only initial core
+      enumeration. Outputs again go under regenerated/.
+
+Input and record formats:
+- new_three_parameter_five.json: exponent matrix mod 60, integral powers
+  of a,b,c, and ten ordered cycle covers. Rows/columns are zero-based.
+- family_3286.txt: first two nonconstant rows, eleven lines per row. Each
+  line is (root exponent mod 40, power of a, power of b, power of c).
+- registry_origin.txt: exact original line in the predecessor component's
+  families.txt. The root/power data have been compared entry by entry.
+- fixed_CCC/groups.txt: one fixed three-row core. Roots stored mod 120.
+  The first line is group count 1. Next: group id, number of third rows,
+  eleven exponents of s. Last: third-row id, eleven exponents of t.
+- fixed_CCC/pair_families.txt: profile, initial presentation index, number
+  of groups, eleven group labels, eleven root exponents mod 840. Free
+  phases multiply each group. 859958 normalized records, not equivalence
+  classes; some families intersect. Stored in first-occurrence order.
+- fixed_CCC/extensions.txt: old-third-row id, group count, eleven group
+  labels, eleven exponents mod 840. 100788 records. These rows extend
+  (1,s,t); all component phases are arbitrary unit scalars.
+- five_compatible.txt: 118030 lines of 67 integers. First twelve: three
+  Hermite rows (r_a,r_b,r_c,d), representing a^r_a b^r_b c^r_c=zeta840^d.
+  A missing row is zero. Each subsequent five integers are a component
+  label and (power_a,power_b,power_c,root exponent mod 840). Thus each
+  entry is z_component times the stated monomial and root. Common row
+  phase is immaterial. These rows extend (1,s,t,u), on the FULL stated
+  parameter locus. Constraints are NOT rationally saturated.
+- sixth_families.txt: empty; no candidate extends all five old rows.
+
+Audit:
+The complete B and C ranges were enumerated in single scans; D,E,F in
+4000-presentation batches (last batches shorter). All completed outputs
+were checked for count consistency and equality with their audit output.
+fixed_CCC/batch_audit.json contains 84 complete range records, with exact
+counts, both summaries, and matching SHA-256 hashes. Duplicate batch data
+and duplicate audit lists are represented by these digests. The full
+merged primary lists are retained. The reproduction driver uses uniform
+4000-presentation chunks for all profiles; its merged lists are required
+to reproduce the delivered hashes.
+
+The graph audit explicitly updates components instead of using parent
+links. The two fixed-core necessary norm filters use primes 2521 and
+3361. Every modular survivor is subjected to exact cycle equations.
+The character audit also reverses the cycle anchor/prime order, and checks
+every consistency decision by independent integer diagonal reduction.
+Both 118030-line character lists agree byte for byte; both final lists
+are empty. audit_hashes.json preserves the agreements.
+
+The independent checker verifies all 859958 two-core records, all 100788
+three-core records, all 118030 constrained four-core records and every
+seed identity. check_lattice.cpp separately compares incremental Hermite
+consistency against diagonal reduction on 30000 deterministic systems,
+including equation-order invariance for all 19468 feasible systems.
+
+No incomplete exploratory scan is used in this proof package. A partial
+fourth-row pilot helped discover the five-row formula; its output is not
+needed for either the explicit identity or the exhaustive exclusion.
+
+Generic inequivalence (Proposition 12.21):
+For a,b,c,ab/c,b/c outside mu60, u and v have distinct unique pentagon
+supports. Hence G has no common pentagon, whereas every member of the
+earlier four-parameter family has one. This invariant proves inequivalence
+on an explicit open dense set. verify_separation.py checks the finite root
+and character data in this analytic argument. Exceptional intersections
+are not classified. The main verify.py invokes this additional check.
+
+
+========================================================================
+ddd_finite / n11_DDD_fourth_rows
+========================================================================
+FINITE-PRESENTATION DDD EXTENSIONS AT WIDTH ELEVEN
+Companion to paper-15, Section 12.6. GPT and Teo, 31 October 2026.
+
+RESULT AND SCOPE
+The complete quintic-label expansion on all 452 feasible chosen support
+classes gives 1,428,768 labelled affine presentations. The 218 classes of
+dimension zero yield exactly 54,836 triples under ordinary equivalence.
+Their exact maximum regular extension heights are:
+  3 rows:  4,000 triples
+  4 rows: 44,292 triples
+  5 rows:  6,544 triples
+No one of these triples can occur in a regular 6x11 matrix or square order 11
+matrix. This includes the 632 ordinary classes arising from the exceptional
+support class (archive ID 826) with Smith invariant 4: their heights 3,4,5
+have counts 568,56,8. Conjugation and Galois actions are NOT quotiented out.
+
+The chosen affine dimension is not the dimension of a global moduli space.
+Some finite triples may also be special members of other chosen families.
+The 190+41+3 positive-dimensional support classes are NOT settled here.
+Their 201,248 labelled affine presentations are saved with all old parameters
+free. The earlier uniform obstruction for one specified five-row family is
+a separate result, preserved in n11_DDD_full_family.
+
+EXACT METHODS
+For each of 36 common old row pairs, enumerate 1,480,490 normalized first
+quotient presentations B--F, with free cycle phases. Complete cycle-cover
+recursion and constant phase equations retain EVERY possible row. Impose
+the third old quotient by another complete cycle-cover calculation.
+Coefficients are residues modulo 840; all remaining phase groups are free.
+There are 479,580 point records and 9,192 circle records, across 1,560 triples
+having at least one circle. Records may overlap; they are a complete union.
+
+A circle has disjoint supports of unequal sizes at odd width 11, and hence
+cannot contain two orthogonal rows. All possible pairwise regular quotients
+between the records are decided exactly. The primary solver uses up to four
+cell phases with the rectangle identity; the audit keeps two variables and
+solves rank 0/1/2 integer congruences directly. Every resulting graph is
+triangle-free. This excludes three added rows. An explicit parameter witness
+for every graph with an edge establishes the 6,544 five-row extensions.
+
+The primary and audit use different phase-graph implementations and the
+splitting primes 2521 and 3361. A nonzero finite-field test proves exclusion;
+a zero reduction is never accepted as proof of regularity. All affirmative
+claims are checked by exact prime-cycle decompositions. No floats, numerical
+tolerances, randomly selected parameter values or root-grid assumptions
+are used. The direct witness parameters lie in mu1680, but the completeness
+proof permits arbitrary unit phases.
+
+new_five_example.json contains a regular 5x11 example of minimal level 120,
+all ten cycle certificates, and its finite triple ID 709. Its first triple
+belongs to the exceptional support class. The cross ratio with exponent 71
+is primitive at level 120. The graph theorem excludes a regular sixth row.
+
+REPRODUCTION
+Requirements: Python 3.10+ standard library and g++ with C++17, no network.
+Run from this component directory:
+  python 3 verify.py
+Checks all supplied Smith identities, all positive-dimensional symbolic
+cycle identities, all fixed triples, all fourth-row symbolic cycle covers,
+all saved fifth-row witnesses, file hashes/counts, and triangle exclusion.
+It does not repeat the exhaustive generation proving completeness.
+
+  python 3 run.py --workers 4
+Regenerates every stage and the independent audit, then runs verify.py.
+This is a substantial exhaustive calculation. It overwrites generated data;
+copy the archive first if preserving its delivered checksum state matters.
+The sibling component n11_noA_DDD supplies the original census inputs.
+The driver checks record counts before dependent stages and uses checked,
+atomic writes for the large pair, extension and compatibility outputs.
+Do not compile with NDEBUG: the exact verification assertions are required.
+
+EXECUTION RECORD
+Both full label expansions, all 36 primary and 36 audit pair/extension
+calculations, and both full compatibility calculations were executed.
+Their complete retained lists agree byte for byte. Three pair outputs and
+two extension outputs were regenerated after record checks detected
+incomplete intermediate files. Only validated final outputs are delivered.
+The final integer verifier was then run on the packaged data.
+The portable aggregate driver was assembled from those executed stages;
+its source compilation, input extraction, grouping and stage checks were
+validated separately. This is not a claim of an additional complete rerun
+of the aggregate driver after that assembly.
+
+FILES AND FORMATS
+classes.json:452 representatives with P,Q,R,A,g,U,V,rank and Smith diagonal.
+labels_counts.txt: class_id dimension binary_branches feasible_label_triples
+  labelled_components distinct_fixed_triples (last count local to class).
+families.txt: class_id dimension permutation_a permutation_b permutation_c
+  branch_code, then 22 coefficient exponents modulo 40, then 22*dimension
+  parameter powers (row-major, followed by parameter index).
+zero_seeds.txt:22 interleaved canonical u,v exponents modulo 40, then number
+  of support classes, then their original archive IDs. Line index is seedID.
+zero_index.txt: seedID number_of_classes classIDs, then u[11],v[11] in the
+  common-row-pair representative, exponents modulo 40.
+zero_groups.txt: groupcount; each group header is groupID seedcount u[11],
+  followed by seedID v[11] for each associated third row.
+exceptional_seeds.txt: all 11,264 labelled examples of class 826, with labels,
+  binary branch and interleaved canonical word.
+
+zero_results/G/pair_families.txt:
+  profile first_presentation_index number_of_groups group[11] coefficient[11]
+  Coefficients modulo 840, each group's first coefficient normalized to 0.
+zero_results/G/extensions.txt:
+  seedID number_of_groups group[11] coefficient[11]
+  These are the complete fourth-row point/circle records for that seed.
+zero_results/G/possible_graphs.txt and possible_graphs_audit.txt:
+  seedID FINITE_or_PARAMETRIC vertices edges clique_size clique_vertices
+  followed by edge endpoint pairs. Vertices index the seed's extensions.
+possible_graphs_audit.txt.witnesses:
+  seedID lower_vertex higher_vertex phase_lower phase_higher (modulo 1680).
+  Insert a point/circle row with exponents 2*coefficient+group*phase (mod 1680).
+  Old rows have exponents 42*old_exponent (mod 1680).
+
+Duplicate large audit family lists are represented by their SHA-256 digests
+in audit_hashes.json and audit_label_hashes.json. Their audited bytes are
+identical to the delivered primary files. The independently computed graph
+lists, witness lists, extension counts and selected execution reports are
+retained separately. Regeneration writes the full audit lists again.
+
+
+========================================================================
+ddd_generic / n11_DDD_generic_triple
+========================================================================
+ALL GENERIC FOURTH ROWS OF ONE THREE-PARAMETER DDD TRIPLE
+
+The exact triple is R(a,b,c), the first three rows of G in the manuscript.
+This component computes all fourth rows with no imposed old-parameter
+relation. It excludes every six-row extension outside an explicit finite
+exceptional set; it does NOT exclude the exceptional parameters, all
+labelled triples of support class 3286, or the whole DDD branch.
+
+Primary and audit each exhaust 1,480,490 first presentations, B through F.
+The final lists have 0,4,4,0,0 rows. All eight are fixed rows, with no
+additional row phase after normalization. The compatibility graph has two
+edges and four isolated vertices. Its edges are (0,4) and (1,5) in the
+lexicographically sorted complete output. These are also its only
+orthogonal pairs, checked separately by integer cyclotomic division.
+Both five-row choices are equivalent, after the explicit parameter change,
+to the previously proved all-parameter five-row family G.
+
+The audit records 5001 nonzero character relations at rejected branches.
+They give a sufficient cover of every parameter at which an additional
+fourth row might occur. Primitive normalization gives eleven characters
+with root order 420 and four with root order 840. The original fixed
+coefficients lie in mu_20; all root residues in the saved modulus-840
+relations are even. These conditions are necessary for additional rows,
+not sufficient. Their intersections and torsion components remain open.
+
+VERIFICATION
+  python3 run.py --verify-only
+FULL REPRODUCTION
+  python3 run.py
+The full run writes regenerated/, compiles primary.cpp and audit.cpp,
+repeats every profile scan and invokes the independent integer verifier.
+Python standard library and C++17 only. No floating-point arithmetic.
+
+RECORDS
+family_3286.txt: 22 lines (u then v); root exponent modulo 40 followed by
+three integer exponents of a,b,c.
+3286_*.txt and audit_3286_*.txt: 67 integers per generic row family;
+12 zero old-constraint entries, then eleven groups of
+(component, exponent_a, exponent_b, exponent_c, root_residue_mod840).
+The final rows all have one component and zero parameter exponents.
+*.txt.exceptional: four integers (r,s,t,e), giving a^r b^s c^t=zeta840^e.
+exceptional_equations.txt: sorted deduplicated union of the audit lists.
+verification.json: all eight rows, exact ordered cycle certificates,
+compatibility certificates, counts, digests, and the 15-character cover.
+The audit traverses opposite anchors and prime order and uses explicit
+component potentials in place of primary parent-linked graph storage.
+
+
+========================================================================
+ddd_real / n11_DDD_exceptional_surfaces
+========================================================================
+EXACT DDD EXCEPTIONAL SURFACES b=c AND b=-c
+Paper-21, Section 8.9, Theorem 8.23 (page 235)
+GPT and Teo, 31 October 2026
+
+RESULT AND SCOPE
+For the specified labelled triple R(a,b,c) in equation (8.39), every
+regular extension on b=c or b=-c has at most five rows, for all remaining
+unit parameters. The known family G attains five everywhere. This includes
+all special curves, all their intersections, all roots of unity and all
+parameters which are not roots of unity. It is not a classification of
+the other exceptional surfaces or the other labelled DDD triples.
+
+The exact full enumeration is on b=c. The column transposition (7,8),
+numbering columns from 0, carries R(a,b,c) to R(a,-b,c), and therefore
+carries b=-c onto b=c. verify_extra.py checks this monomial identity.
+
+QUICK VERIFICATION
+  python3 run.py --verify-only
+This compiles the independent direct-substitution expansion checker and
+runs the exact symbolic row, locus, graph and witness verifiers. Python 3
+standard library and a C++17 compiler are required. No network is used.
+
+FULL REPRODUCTION
+  python3 run.py
+All primary and audit fourth-row scans run serially, followed by all
+compatibility calculations and all verifiers. Output goes to regenerated/.
+No delivered result is overwritten. Allow several hours and at least
+8 GiB RAM; the largest primary scan has 10,014,968 intermediate records.
+No reduced seventh-cycle labelling, presentation cap or generic rejection
+is enabled. Assertions stay enabled in all builds. CXX may select another
+C++17 compiler. The default is g++ -O3 -std=c++17, with -DAUDIT for audits.
+
+To regenerate all downstream calculations from the completed saved scans:
+  python3 run.py --reuse-scans
+This still regenerates the parameter strata, the six ordinary-equivalence
+certificates, all primary/audit compatibility graphs and all verification.
+It also compares the regenerated data with the delivered data.
+
+INPUTS
+b_equals_c.txt contains u followed by v, eleven lines each. A line
+  e p q r
+means zeta_40^e a^p b^q c^r. Here r is zero and c is unused, since c=b
+was substituted. The first row consists of ones. reference_R.txt is the
+original three-parameter triple in that same format. reference_G.json
+records the already proved five-row family, with coefficients modulo 60.
+exceptional_equations_previous.txt is the exact 5001-equation cover from
+the preceding generic-triple component, copied without alteration.
+
+FULL FOURTH-ROW SCANS
+                  first presentations   after u      after v
+B (7,2,2)                 712800             0            0
+C (5,3,3)                 443520         61608         3604
+D (5,2,2,2)               166320        973758        19620
+E (3,3,3,2)               123200        806720            0
+F (3,2,2,2,2)              34650      10014968          256
+Total first presentations: 1,480,490.
+The A profile is ruled out by the previously proved A-branch theorem.
+
+full.cpp uses parent-linked phase graphs and an unsaturated integer
+character lattice. audit_lowest.cpp uses explicit component potentials,
+reversed prime order and an independent primitive-integer-kernel check
+for every consistency decision. packed_audit.cpp is the latter audit
+with a shorter, lossless intermediate key, used only for profile F.
+Every omitted coordinate is asserted zero. Both traversals retain the
+least unassigned column as cycle anchor. The compatibility graph audits
+use the opposite anchor as well as the reversed prime order.
+
+bc_?.txt and audit_bc_?.txt are complete outputs, with completed run logs.
+The two lists agree as sets separately for every profile. Files with
+suffix .writing are temporary and are never accepted as completed data.
+There are 23,416 distinct final records in all_families.txt.
+
+67-INTEGER RECORD FORMAT
+First 12 integers: three rows (r,s,t,e) of the canonical integer lattice,
+with equation a^r b^s c^t=zeta_840^e. The third coordinate is unused.
+An all-zero row is an absent equation. Lattices are not saturated: every
+root branch of a nonprimitive relation is retained.
+Then 11 groups of five integers (g,p,q,r,e), meaning the new row entry
+  z_g a^p b^q c^r zeta_840^e.
+Each connected phase group is normalized at its first column; one common
+phase is irrelevant. Thus max(g) is the number of additional row phases.
+Different records may overlap; no equivalence quotient is inferred.
+
+RECORD DISTRIBUTION AND LOCI
+(old rank, additional row phases):
+  (0,0): 24; (1,0): 1296; (2,0): 22000; (2,1): 96.
+The 24 generic rows have tail factor 1, a or b and coefficients in mu_60.
+Their identity compatibility graph has six disjoint edges and 12 isolated
+vertices. The six five-row families are explicitly equivalent to G.
+analysis/generic_published.txt/json uses the paper's order; the six maps
+and row/column permutations are in analysis/five_equivalences.json.
+
+Rank-one records occur on exactly 132 circles a=q, b=q or a/b=q, with
+44 constants in each direction, as printed in (8.68). Rank-two records
+have 1936 distinct support points, all in mu_60 squared. The 96 free-row
+records give six circles at each of the 16 points
+  (a,b) in zeta_60^3 mu_4 times zeta_60^6 mu_4.
+
+organize.py resolves the earlier 5001-equation cover into 5016 connected
+two-dimensional tori in 15 primitive directions. connected_tori.json
+stores them. This is a sufficient cover, not a claim that every torus
+supports additional rows. The present theorem settles two entire tori,
+b/c=1 and b/c=-1, including all their intersections with the cover.
+
+COMPATIBILITY COVERAGE
+prepare_graphs.py constructs all 180 circles with q in mu_60, including
+48 circles with no additional rank-one row, and all 3600 mu_60 points.
+graphs/audit_expansion.cpp reconstructs every list by directly testing
+the original character equations, independently of the rank grouping.
+
+Outside these circles only the 24 generic rows occur. global_graph.cpp
+checks all 276 pairs: every nonidentity compatibility has character
+value in mu_60. On any circle, pair quotient character spread is at most
+two, and coefficients belong to mu_60. A mixed prime cycle therefore
+forces the circle parameter into mu_840. curve_graphs.cpp tests its
+780 roots outside mu_60 and the entire complement of mu_840 symbolically.
+Thus 180 times 781 = 140580 graphs exhaust all nonintersection parameters.
+All are triangle-free. Edge histogram:
+  6:131208; 14:4686; 40:4674; 48:12.
+
+At the 3600 finite points, all applicable fixed rows and row circles are
+combined. There are 101768 normalized families across these lists.
+3584 point lists are finite; 16 include the row circles. Two members of
+one row circle cannot be orthogonal because eleven is odd. Every point
+graph has maximum clique cardinality two. At row-circle points, primary
+compatibility uses phase cells and their rectangle relation; the audit
+uses two-variable integer congruences, retaining all determinant-two
+branches in mu_1680. The audit supplies an actual fifth-row witness at
+each of the 3600 points; verify_extra.py verifies every quotient exactly.
+
+The graphs for row circles record pairwise feasibility. Triangle-freeness
+is a valid upper bound even if feasible choices for different edges
+could fail to be simultaneous. No such simultaneity assumption is used.
+
+FILES AND VERIFIERS
+analysis/curves.txt: header 180, then circle id, normal A,B, exponent
+q modulo 60, row count and maximal pair character spread. Each row is
+11 character exponents followed by 11 coefficient exponents modulo 840.
+analysis/point_families.txt: point id=60*a+b, number of phase groups,
+11 group labels and 11 coefficient exponents modulo 840.
+analysis/generic_records.txt: the 24 rank-zero records in scan-set order.
+Graph edge lists and their audit copies are in analysis/. For curves,
+parameter -1 means the full complement of mu_840. Nonnegative parameters
+are exponents modulo 840, with multiples of 14 left to the point lists.
+Primary and audit edge lists agree byte for byte.
+
+verify_surface.py compares all complete scans, symbolically verifies all
+rows, checks exact rank-one constants and every rank-two torsion branch,
+and independently checks graph coverage and triangle-freeness.
+verify_extra.py independently resolves the 5016 connected tori, checks
+330 entry identities for the six equivalences, verifies the sign symmetry
+and checks all 3600 fifth-row witnesses. verification.json and
+extra_verification.json retain the final reports.
+
+Finite-field filters only reject nonzero sums; every acceptance uses
+exact cycle arithmetic. No floating-point orthogonality test or finite
+phase grid is used to stand for an arbitrary unit parameter.
+
+
+========================================================================
+ddd_imag / n11_DDD_imaginary_surfaces
+========================================================================
+EXACT DDD EXTENSIONS ON b/c = i AND b/c = -i
+Companion to paper-22, Section 8.10, Theorem 8.24.
+
+INPUT AND SCOPE
+The input is the particular labelled three-row family R(a,b,c) printed in
+the paper, restricted to c=-ib. Both a and b range over the entire unit
+circle, independently. The exact column swap in verify_extra.py transfers
+the answer to c=ib. Together with the preceding component, b/c in mu_4
+is settled for this labelled triple. Other exceptional ratios, characters,
+and other labelled DDD families remain open.
+
+The maximum number of rows in a regular extension is exactly five.
+There are no regular six-row extensions on these two complete surfaces.
+This is an unrestricted extension theorem for the specified triple, not
+only an obstruction for the last row of a chosen five-row construction.
+
+COMMANDS
+  python3 run.py --verify-only
+Checks all delivered records, support geometry, graph agreement, triangles,
+integer contradictions, symmetries and all 14400 actual five-row witnesses.
+It compiles and runs a separate direct-substitution expansion audit.
+
+  python3 run.py
+Repeats every primary and audit scan, regenerates every graph and phase
+locus, checks all certificates, and compares with the delivered data.
+The calculation is substantial. Scans run serially to bound peak memory;
+the largest F scans retain over ten million intermediate keys.
+
+  python3 run.py --reuse-scans
+Copies the completed delivered profile scans and regenerates every later
+stage. The same comparison with the delivered results is then performed.
+
+Both regeneration commands write into regenerated/. Python's standard
+library and a C++17 compiler are sufficient. No network access, floating
+point arithmetic, or numerical phase grid is used.
+
+ENUMERATION
+The five first profiles B,C,D,E,F exhaust 1480490 presentations, including
+every root labelling of every cycle support. The first old/new quotient is
+represented by its cycle-block phases. Phase-graph equations impose the
+other two quotients in succession. All consistent character equations on
+a,b are retained, without saturating the integer lattice. Normalization
+removes only independent component phases and duplicate identical records.
+
+full.cpp uses parent-linked phase graphs and integer lattice reduction.
+audit_lowest.cpp uses explicit component potentials, reversed prime order,
+and a separate primitive-kernel consistency test for every lattice update.
+packed_primary.cpp and packed_audit.cpp use a lossless 35-integer key only
+for intermediate F records. After the second row, coefficients depend on
+a alone: every omitted b/third-character coordinate and lattice row is
+asserted zero at every insertion. Final records always have 67 integers.
+Do not compile with REDUCE_SEVENTH or supply a presentation limit.
+
+The logs primary_P.log and audit_P.log retain progress and the final tests,
+pairs, final, nodes, leaves counts. The .txt files contain complete final
+lists. The union is all_families.txt. verification.json compares sets and
+all final counters, checks the expected number of first presentations,
+and records the exact support and graph statistics.
+
+RECORD FORMAT
+b_equals_ic.txt and reference_R.txt each have 22 lines, for the second and
+third old rows. A line is e p q r, representing zeta_40^e a^p b^q c^r.
+The first input has r=0 and its b exponent incorporates c=-ib.
+
+Each final record has 67 integers. The first twelve are three rows of a
+triangular integer character lattice (p,q,r,e), meaning
+  a^p b^q c^r = zeta_840^e.
+The third character is unused here. The remaining eleven groups of five
+are (component,p,q,r,e), representing the corresponding row entry as
+  z_component * a^p b^q c^r * zeta_840^e.
+The common row phase is removed. Lattices remain unsaturated, including
+all root components of nonprimitive equations.
+
+EXACT PARAMETER PARTITION
+prepare_graphs.py splits every rank-one lattice into connected curves and
+every rank-two lattice into all of its torsion points using rational angles.
+It also enumerates all intersections of distinct curve directions. This
+gives 140 curves in five character directions and the containing finite
+set mu_120^2. Outside both these sets only eight constant rows occur.
+
+On each curve, all candidate coefficients lie in mu_60 and every pairwise
+character spread is at most two. A mixed-character prime cycle forces
+the remaining old parameter into mu_840. Consequently 720 root values
+outside mu_120 and one formal complementary graph cover every punctured
+curve exactly. This is a proven finite reduction of a continuous problem.
+
+analysis/curves.txt begins with the curve count. Each curve has a header
+  id A B q a0 b0 da db row_count spread
+with a^A b^B=zeta_840^q and parametrization
+  a=zeta_840^a0 t^da, b=zeta_840^b0 t^db.
+Each row is eleven integer t exponents followed by eleven root exponents.
+
+analysis/point_families.txt lines contain
+  point_id component_count [11 component labels] [11 root exponents].
+point_id=120*a+b for the point (zeta_120^a,zeta_120^b).
+Every family has at most one additional free phase. Two rows from one such
+family cannot be orthogonal: their two multiplicities sum to the odd
+number eleven and therefore differ.
+
+COMPATIBILITY AND SIMULTANEOUS PHASES
+graphs/curve_graphs.cpp computes all punctured-curve graphs, including the
+formal complement. Its audit changes the splitting prime, cycle anchor
+and prime order. graphs/possible_graphs.cpp computes point-family graphs;
+the primary phase-cell method is checked by direct two-phase congruences
+in the audit. The graph files agree byte for byte. The audit witness file
+records one actual pair of added rows at every finite point, with phases
+in residues modulo 1680. verify_extra.py checks all ten row pairs.
+
+graphs/audit_expansion.cpp independently substitutes every original record
+into every point and every formal curve, checks the whole resulting lists,
+and checks every curve coefficient and pairwise exponent spread.
+
+Four point-family graphs have triangles. These are upper-bound graphs:
+three edges need not use compatible choices of phases at their endpoints.
+graphs/triangle_loci.cpp enumerates every prime-cycle cover of each edge
+quotient, retains its entire phase-character lattice, then tests every
+combination of the three edge loci in three common phase variables. Its
+audit changes the anchor and prime order and independently diagonalizes
+the integer consistency systems. No combination survives.
+
+analysis/triangle_loci.txt and triangle_loci_audit.txt contain:
+ PAIR point row_i row_j [12 integers for a 3-by-4 lattice]
+ TRIANGLE point row_i row_j row_k n_ij n_ik n_jk combinations survivors
+The third phase coordinate of a PAIR record is zero. All survivors counts
+are zero. No SURVIVOR line occurs. The two files agree byte for byte.
+
+verify_triangles.py independently enumerates all graph triangles, verifies
+each pair locus by symbolic prime-cycle covers, and produces an explicit
+integer contradiction for each of the 3296 combinations of edge loci.
+For equations A*angles=e/840 modulo integers, it checks w*A=0 and
+w*e nonzero modulo 840. The saved contradiction file is compared with its
+independent reconstruction, including every integer weight.
+
+A contradiction line is:
+ point i j k locus_ij locus_ik locus_jk weight_count [weights] residue
+Pair-locus indices use lexicographic order. Nonzero equations from each
+pair lattice are embedded in the three variables, in edge order ij,ik,jk.
+The residue is reduced modulo 840 and is nonzero.
+
+The explicit three-family example is incompatible_triangle_example.json.
+Its scalar-product identities are checked modulo Phi_20 with integer
+polynomial arithmetic, and its regular quotients by exact cycle covers.
+
+Only complete scans and exact derived certificates are delivered. Partial
+exploration outputs and compiled binaries are not part of this component.
+
+
+========================================================================
+ddd_120 / n11_DDD_bh120_pilot
+========================================================================
+EXACT FIXED-LEVEL DDD PILOT: b/c = zeta_3, LEVEL 120
+
+Scope
+This component studies the particular labelled triple R(a,b,c) in the
+paper, with c=zeta_3^(-1)b, a,b in mu_120. Every added row is required
+to have entries in mu_120. It does not settle arbitrary unit parameters,
+other ratios, other labelled DDD triples, or all regular BH(11,120).
+The column swap 7<->8 sends R(a,b,c) to R(a,-b,c), while swapping the
+final two column pairs sends it to R(-ab/c,c,b). The two exact identities
+cover all four ratios b/c in {zeta_3,zeta_3^(-1),-zeta_3,-zeta_3^(-1)}.
+Combined with the preceding unrestricted mu_4 result, this excludes a
+level-120 sixth row whenever b/c lies in mu_4 union mu_6. This last
+statement still concerns the same labelled R. Indices are zero-based.
+
+Mathematical enumeration
+Every regular quotient with entries in mu_120 has a prime-cycle cover
+using only 2,3,5. Its possible profiles at order eleven are
+C=5+3+3, D=5+2+2+2, E=3+3+3+2, F=3+2+2+2+2.
+The complete first-presentation counts are 443520,166320,123200,34650.
+All supports and all root labels are enumerated. No presentation cap
+is passed by run.py. Every later quotient uses all 2-,3-,5-cycle covers.
+The old-parameter equation a^120=1 is included from the beginning;
+b^120=1 is included after the second old row has been imposed. That
+row is independent of b, so delaying this equation loses no condition.
+No lattice saturation or selection of one root of a nonprimitive
+equation is performed.
+
+Primary and audit implementations
+The primary solvers use weighted disjoint sets for phase equations.
+The audit solvers use explicit component potentials, reverse prime
+traversal and an independent primitive integer-kernel test for every
+old-parameter consistency decision. Profile F uses a lossless 35-integer
+intermediate key; assertions check that all omitted coordinates are zero.
+Every final record is still stored in the full 67-integer format.
+The two complete final record sets agree profile by profile.
+
+Files and formats
+reference_R.txt: original two nonconstant rows; each line is
+  e p q r, meaning zeta_40^e a^p b^q c^r.
+ratio_zeta3.txt: substituted input; each line is
+  e p q 0, meaning zeta_120^e a^p b^q.
+primary_C.txt and audit_C.txt, and similarly D,E,F: complete final
+  records, each with 67 integers. The first 12 integers are three
+  triangular character equations (p,q,r,e), meaning
+  a^p b^q=zeta_120^e; the third character coordinate is always zero.
+  The remaining eleven groups (g,p,q,0,e) encode each row entry as
+  z_g a^p b^q zeta_120^e, with the group-0 phase fixed to one.
+analysis/all_families.txt: sorted union of all final primary records.
+analysis/point_families.txt: point identifier, component count,
+  eleven group labels, eleven coefficient exponents modulo 120.
+  The point identifier is 120*alpha+beta, where a=zeta_120^alpha,
+  b=zeta_120^beta and c=zeta_120^(beta-40).
+analysis/rows.txt: point identifier and eleven actual row exponents.
+  Each point's row list is sorted and has no duplicates.
+analysis/graphs.txt: point identifier, vertex count, edge count,
+  maximum clique cardinality k, k witness vertex indices, and then
+  two vertex indices for every edge. Vertex indices are zero-based.
+  The same outputs from the alternative graph run have suffix _audit.
+
+prepare.py solves the triangular equations exactly modulo 120 and
+deduplicates specialized families at all 14400 old-parameter points.
+graphs.cpp expands every remaining row phase through all of mu_120;
+its vertices are actual rows, not row families. It checks each pair
+by a necessary finite-field filter followed by an exact prime-cycle
+cover, and computes the maximum clique. The audit uses a different
+splitting prime and opposite cycle anchors and prime order.
+audit_expansion.cpp independently substitutes all 14400 points into
+every original character record, checks the family lists, and expands
+their row phases again. It does not use the triangular point solver.
+verify_rows.py checks every family symbolically on its saved locus.
+verify.py checks both complete scan counts and record sets, both actual
+row lists and graphs, every row against the old triple, every edge and
+nonedge with a separate multiset-cycle routine, and every maximum
+clique upper bound by independent recursive intersections. It also
+checks the input substitution, both column symmetries, period relations and
+explicit lower-bound examples with all pairwise cycle partitions.
+
+Commands (Python 3 standard library and a C++17 compiler)
+  python3 run.py --verify-only
+checks the delivered certificate without re-enumerating presentations.
+  python3 run.py --reuse-scans
+regenerates every stage after the complete delivered profile scans.
+  python3 run.py
+repeats all eight profile scans and all subsequent stages. This may
+take substantial time. It uses serial scans to bound memory usage.
+Regeneration writes to regenerated/ and compares with the delivered
+data rather than replacing them. No network or floating point is used.
+
+Final exact counts and the maximum extension are in verification.json.
+The partial exploratory pilot and compiled binaries are not included.
+
+
+========================================================================
+early_sixth / n11_DDD_sixth_pilot
+========================================================================
+ON REGULAR COMPLEX HADAMARD MATRICES
+GPT and Teo -- 27 October 2026
+
+A SIXTH-ROW OBSTRUCTION FOR THE EXPLICIT FIVE-ROW DDD FAMILY
+
+RESULTS
+1. The particular 5x11 seed below has no unimodular sixth row orthogonal
+   to its five rows whose entries are a union of rotated prime cycles.
+   Consequently it has no regular 6x11 extension, of ANY quotient types,
+   and cannot occur as five rows of a regular square of order 11.
+2. The same nonextension conclusion holds on an open dense subset of
+   its four-parameter family, with complement contained in a proper real
+   algebraic subset of the parameter torus. That exceptional subset has
+   Haar measure zero. Exceptional parameters have NOT been classified.
+3. These results concern this explicit five-row family. They do not
+   eliminate all three-row DDD configurations.
+
+THE MATRIX
+Let zeta=exp(2*pi*i/20). Raise zeta entrywise to the following exponents:
+
+0  0  0  0  0 | 0  0  0  0  0  0
+0  4  8 12 16 | 0 10 15  5  5 15
+0  8 16  4 12 | 0 15 10 15  5  5
+0 12  4 16  8 | 0  5 15 10 15  5
+0 16 12  8  4 | 0  5  5 15 10 15
+
+In rows 1,2,3,4 (numbering from zero), multiply the last six entries by
+t_1,t_2,t_3,t_4 respectively, with each |t_r|=1. The first row stays all
+ones. This is the previously constructed regular five-row DDD family.
+The seed in result 1 is t_1=t_2=t_3=t_4=1.
+
+WHY THE SEARCH IS EXHAUSTIVE
+A candidate sixth row x regular against the first row is a union of
+rotated prime cycles. The only partitions of 11 into prime lengths are
+A=11; B=7+2+2; C=5+3+3; D=5+2+2+2; E=3+3+3+2; F=3+2+2+2+2.
+Composite cycles can be refined into prime cycles, so they add no cases.
+
+For each support partition S_1,...,S_k, enumerate all cycle labellings.
+The least column of each block receives label zero; its arbitrary cycle
+phase absorbs this normalization. A p-cycle then has (p-1)! labellings.
+Blocks of equal size are ordered by their least column to remove only
+the irrelevant block-permutation duplication. No equivalence-class claim
+is made for these support/label counts.
+
+Write x_j=u_b*w_j for j in S_b, where |u_b|=1 and w_j is the prescribed
+p-th root. Orthogonality to the first row is automatic. The remaining
+four equations are A(t)u=0, with
+
+ A(t)_{r,b} = sum_{j in S_b} w_j*conjugate(H(t)_{r,j}),  r=1,...,4.
+
+The phases u_b are arbitrary continuous phases throughout. There is no
+restriction to a finite root grid for the candidate sixth row.
+
+EXACT EXCLUSION TESTS
+If k<=4 and A has column rank k, there is no nonzero kernel vector.
+For any choice of k-1 rows, form its signed maximal-minor vector c.
+If Au=0 and every |u_b|=1, then either all those minors vanish or their
+squared absolute values are all equal. Indeed, a nonzero c spans the
+kernel of this (k-1)-by-k submatrix. Thus an unequal pair c_b*conj(c_b)
+is an exact obstruction, even if the full matrix has larger rank.
+
+At the seed, coefficients for B--F lie in Z[zeta_420]. Reduce at primes
+421, 3361, 4621, using respectively primitive 420th roots 2, 3091, 2048.
+Complex conjugation is implemented by replacing the root by its inverse,
+not by assuming conjugation is the identity in the finite field.
+A nonzero reduced determinant or norm difference proves that the exact
+cyclotomic integer was nonzero. Reduction is used only for exclusions;
+a vanishing reduction is never treated as a positive solution.
+
+Every accepted modular exclusion is separately checked by direct
+Leibniz determinant expansion, independently of Gaussian elimination.
+All computations in the certificate path use exact integers/rationals.
+
+Profile   supports   labelled cases   rank excluded   norm excluded   left
+B              990          712800          686876           25924      0
+C             4620          443520          443520               0      0
+D             6930          166320          156604            9716      0
+E            15400          123200          120656            2544      0
+F            17325           34650               0           34636     14
+
+Total: 1,480,490 labelled presentations; 1,480,476 modular exclusions.
+
+Profile A is excluded without enumeration. Over Q(zeta_20), the minimal
+polynomial of a primitive eleventh root is 1+X+...+X^10: the extension
+degree is phi(220)/phi(20)=80/8=10. A putative eleven-cycle orthogonal
+to the second seed row would therefore force its eleven coefficients,
+the permuted conjugate entries of that row, to be equal. They are not.
+This covers all 10! labellings of A.
+
+THE FOURTEEN REMAINING F PRESENTATIONS
+Exact arithmetic in Q(zeta_60), with
+ Phi_60(X)=X^16+X^14-X^10-X^8-X^6+X^2+1,
+shows rank three in every case. A verified two-column basis describes
+the complete kernel.
+In ten cases every kernel vector has zero triangle-phase coordinate.
+In the other four, use the two free coordinates s,t, which themselves
+must have absolute value one. Set z=t/s. For each kernel coordinate
+a*s+b*t, the condition of absolute value one gives
+ conjugate(a)*b*z + a*conjugate(b)*conjugate(z)
+   = 1-|a|^2-|b|^2.
+These linear equations in z and conjugate(z) are inconsistent. The
+stored certificates give exact linear combinations yielding 0=c!=0.
+The verifier checks the kernel identities, the rank via a separate
+modular lower bound, and these inconsistency identities directly.
+This proves result 1.
+
+WHY THE GENERIC FAMILY IS ALSO EXCLUDED
+For any fixed support and labels, A(t) has Laurent-polynomial entries
+in the four torus parameters. Each rank determinant or cofactor-norm
+difference above is a necessary vanishing Laurent polynomial for an
+extension. Every presentation excluded at the seed therefore supplies
+a polynomial which is not identically zero on the torus.
+
+For the fourteen presentations whose maximal-minor tests degenerate at
+the seed, evaluate instead at (t_1,t_2,t_3,t_4)=(1,1,1,i). In every case
+the full 4-by-5 cofactor norms are unequal modulo 421. The exact values
+need not be expanded: these evaluations certify nonzero polynomials.
+
+For each A labelling, the orthogonality coefficient already nonzero at
+the seed is a nonzero Laurent polynomial as well. There are finitely
+many presentations altogether. Extendible parameters are contained in
+the finite union of the zero sets of their nonzero necessary polynomial
+obstructions. Each zero set is proper real algebraic on T^4, has empty
+interior and Haar measure zero. Their union has the same properties.
+Its open dense complement consists entirely of nonextendible members.
+This proves result 2. It does not settle the exceptional zero sets.
+
+REPRODUCE
+    python3 run.py
+Requires Python 3 standard library and g++ with C++17.
+The full driver was run successfully before delivery.
+
+FILES
+seed.json: five-row seed and exact D cycle covers.
+search.cpp: exhaustive support/label enumeration and modular exclusions;
+  every exclusion also receives a direct determinant-expansion check.
+results.txt: full counts. unresolved.txt: the fourteen F presentations.
+exact_remaining.py: exact cyclotomic elimination; exact_remaining.json:
+  full kernel and inconsistency certificates.
+verify.py / verification.json: direct certificate and seed verification.
+generic_witnesses.py / generic_witnesses.json: exact modular evaluations
+  proving all fourteen outstanding family polynomials are nonzero.
+run.py: complete reproduction driver.
+
+SCOPE
+Only regularity against the first old row was needed for the negative
+result. No assumption fixes the other four new quotient types, any
+pentagon support, or any phase to a root of unity. Arbitrary nonregular
+unimodular sixth rows are not excluded by this calculation.
+
+
+========================================================================
+early_circles / n11_DDD_exceptional_circles
+========================================================================
+DDD EXCEPTIONAL PARAMETER CIRCLES -- EXACT COMPUTATION
+GPT and Teo
+
+RESULT AND SCOPE
+For the displayed five-row H_{5,11}(t_1,t_2,t_3,t_4), no regular sixth
+row exists whenever at least three of the four parameters belong to
+{1,i,-1,-i}. This covers 256 complete coordinate circles, including
+arbitrary unit phases in the varying coordinate, and all 256 grid points.
+It does NOT settle the full four-parameter family or all DDD triples.
+
+A necessary-condition calculation leaves 48 quadratic presentations.
+Their 96 labelled algebraic roots genuinely supply orthogonal unit rows,
+but the quotient with the varying old row contains no prime cycle.
+The explicit sqrt(11) example is included in Section 12.3 of paper-12.
+Thus a stronger claim excluding all rows regular only against the first
+row is false on some circles. It is proved only on the fourth-root grid.
+
+COMMANDS
+    python3 run.py
+Rebuilds two C++17 enumerators, generates the point and circle cases,
+solves the residual exact polynomial/kernel problems, and runs the
+certificate verifier. Uses Python 3.10+ and g++; no external packages.
+It overwrites regenerated data. Copy the directory before running if you
+want to keep the delivered bytes and their checksum record unchanged.
+Up to eight local worker processes are used; this is ordinary parallel
+execution of exact programs, not floating-point sampling.
+
+    python3 verify_certificates.py
+Checks the delivered exact polynomial, kernel and nonregularity
+certificates. This does not rerun the exhaustive support exclusions;
+those are checked by the C++ enumeration in the full command above.
+
+COUNTS
+Per parameter point or circle: 1,480,490 B--F presentations.
+A is excluded by the fixed-row cyclotomic irreducibility argument.
+Grid: 240 points excluded immediately; 56 F presentations at the other
+16 points are excluded exactly (48 forced-zero, 8 norm inconsistency).
+Circles: 11,984 presentations survive the homogeneous polynomial test.
+They give 1,280 roots q=0; 10,432 quadratics with no unit roots;
+224 occurrences of fourth-root cases; 48 quadratics with two unit roots.
+All 96 algebraic candidates fail regularity against the varying old row.
+
+FILES
+search_grid.cpp / search_circles.cpp: exhaustive support and label scans.
+The circle scanner checks every accepted rank-four cubic certificate by
+an independent direct determinant expansion.
+point_exact.py: exact elimination of the remaining grid kernels.
+analyze_circles.py: polynomial GCD and explicit Bezout identities.
+finish_quadratic_cases.py: kernels over Q(zeta_60,sqrt(11)) and cycle covers.
+verify_certificates.py: independent polynomial reconstruction by exact
+evaluations at 0,1,-1,i; direct Bezout, kernel, minor, and quotient checks.
+cyclotomic60.py, quadratic11.py: exact field operations.
+intervals.py: rational interval sign certificates, with integer square
+root bounds; no floating-point mathematical calculation.
+seed.json: the original H_{5,11}(1,1,1,1) and its D-cycle covers.
+grid/: each fourth-root tuple, labelled survivors and exact certificates.
+circles/: each varying coordinate and fixed tuple, the reordered seed,
+labelled survivors, Bezout identities and any quadratic certificates.
+The three summary JSON files and verification.json record final totals.
+
+INDEX CONVENTIONS
+In keys var_a_b_c_d, var=0,1,2,3 means varying t_1,t_2,t_3,t_4.
+The other entries are exponents modulo 20, with 0,5,10,15 representing
+1,i,-1,-i. The varying slot is zero as a placeholder, not a fixed phase.
+The varying old row is moved to row 4 in each local seed; row 0 stays one.
+The polynomial coordinate is q=conjugate(t_var). Cycle labels are stored
+modulo 420. Column indices are zero-based. Matrices are normalized only
+as described in the manuscript; support counts are not equivalence counts.
+
+
+========================================================================
+early_two / n11_DDD_two_parameters
+========================================================================
+N=11 DDD TWO-PARAMETER EXCLUSION -- PAPER-13, SECTION 12.4
+GPT and Teo, 31 October 2026
+
+RESULT
+The specified five-row family H_{5,11}(t) has no regular sixth row when
+at least two of its four multipliers belong to mu_4. This is the union
+of 96 coordinate two-dimensional tori. It is not a classification of
+all DDD triples or of all regular square matrices at order 11.
+The full regular-extension parameter locus in T^4 is consequently a
+finite union of possible torsion points and possible torsion translates
+of circles. Whether any such remaining component exists is open.
+
+EXACT COUNTS
+96 * 1,480,490 = 142,127,040 B--F labelled presentations.
+Initial tests retain 4,368 F presentations:
+  3,840 excluded by dependent-column norm identities;
+    512 isolated at exact mu_20 parameter pairs, then excluded by a
+        forced zero coordinate in the complete rank-three kernel;
+     16 excluded by all 7,104 compatible additional-cycle choices.
+Those 7,104 choices have lengths 2, 3, 5, 7 in counts 128, 832, 6144, 0.
+Profile A is excluded by the earlier A-containing triple theorem.
+
+REQUIREMENTS AND COMMANDS
+Python 3.10+ standard library and g++ with C++17. No network, numerical
+algebra package, or floating-point arithmetic is used.
+  python3 run.py
+rebuilds all executables, enumerates all 96 tori, regenerates the exact
+certificates, repeats all arithmetic with alternative determinant and
+resultant algorithms, and verifies the certificate identities.
+  python3 verify_certificates.py
+checks supplied characteristic-zero identities and repeats the small
+auxiliary reductions. It builds missing auxiliary verifier binaries.
+This shorter command reads the saved audit_summary.json for the large
+initial rerun; use run.py to repeat that exhaustive scan too.
+
+The drivers use up to eight ordinary local worker processes/threads.
+This is a resource setting, not part of the mathematical certificate.
+Expected reproduction time depends on the machine. No timing is used
+as a mathematical assumption.
+
+FILES
+seed.json: original 5 x 11 seed, inherited from the circle component.
+common.hpp: exact finite-field and bivariate/univariate arithmetic.
+search.cpp: normalized support and root-label enumeration.
+filter_rank2.cpp: norm tests from a dependent complementary triple.
+isolate_points.cpp: exact torsion projection isolation.
+filter_cycles.cpp: exhaustive one-cycle refinement for the final 16.
+cyclotomic60.py: rational arithmetic modulo Phi_60.
+extract_polynomials.py: exact cyclotomic phase-matrix construction.
+analyze.py: dependence checks and kernel certificate generation.
+verify_certificates.py: recursive determinant identity checks, full
+kernel verification without solving kernels, and auxiliary reruns.
+run.py: complete reproduction driver.
+
+The AUDIT build uses Gaussian small minors instead of permutation
+expansion, reversed coefficient ordering for the homogeneous span,
+and Sylvester determinants instead of resultant formulas. The two
+full enumerations have identical counts and retained presentation lists.
+
+Each surfaces/ directory is named a_b_s1_s2_s3_s4. Indices a,b are
+ZERO BASED (0..3) in code. The fixed shifts s_r are exponents modulo
+20, so 0,5,10,15 represent the four roots 1,i,-1,-i. Variable shifts
+are zero placeholders. The seed.json in each such directory has old
+rows reordered as: all ones, fixed row, fixed row, variable row,
+variable row. Its last two row multipliers have conjugates q,s.
+
+unresolved.txt records the first-stage F presentations: letter, eleven
+block indices, eleven root exponents modulo 420. Block indices are
+zero based. dependent pairs in dependencies.txt are block indices.
+point_certificates.json records exact q,s exponents modulo 420,
+a full kernel basis, free coordinate indices, a nonzero rank minor,
+and the identically zero kernel coordinate. Cyclotomic coefficients
+are rational strings in the basis 1,z,...,z^15 with z=zeta_60.
+curve_unresolved.txt names the cases requiring the additional cycle.
+cycle_filter.txt records index, exclusion flag, total branches, failed
+branches, then counts for prime lengths 2,3,5,7.
+
+verification.json aggregates the certificate checks. audit_summary.json
+records the full alternative-arithmetic enumeration. reproduction.log
+records the complete standalone run. The audit/ and audit_aux/ data
+preserve rerun inputs/results; platform-specific binaries and caches
+are omitted from the archive and rebuilt by the drivers.
+
+PROOF SCOPE
+Full regularity is essential in the finite-affine-cover argument which
+forces a finite parameter projection to consist of torsion points.
+The root bound is L=352800 only after a nonzero degree <= 8 eliminant
+has been proved. No claim that arbitrary orthogonal parameters have
+this finite order is made. The final 16 require an additional complete
+prime cycle against a fixed old row. Retained necessary-condition
+cases are never asserted to be actual sixth rows.
+
+The initial results table preserves one reserved_zero column (always
+zero) for compatibility; use the named macaulay, torsion_q and
+torsion_s columns for the actual exclusion categories.
+
+
+========================================================================
+EEE source note
+========================================================================
+GPT and Teo — 26 October 2026
+
+The EEE case consists of regular three-row matrices of width 11 whose three row quotients have chosen decompositions into three triangles and one antipodal pair. This note gives an exhaustive finite affine normal form and a classification of feasible chosen supports. Matrix equivalence classes and extensions to four or more rows are not classified here.
+
+# Main result
+
+Every regular EEE triple is equivalent to a member of a finite union of affine families with at most four parameters. Each family has a seed with root order in the following set:
+
+```math
+\{6,12,18,24,30,36,42\}.
+```
+
+Four parameters really occur. An explicit seed with a primitive 42nd-root cross ratio is given below.
+
+There are exactly 6,904 feasible classes of chosen support triples, under column permutations, permutations of the three row quotients, and permutations of the three triangle blocks in each quotient. Their phase dimensions are:
+
+| Dimension | Feasible support classes |
+| --- | ---: |
+| 0 | 5,230 |
+| 1 | 1,544 |
+| 2 | 121 |
+| 3 | 8 |
+| 4 | 1 |
+
+These are support classes. Distinct supports can describe the same matrix, and a zero-dimensional chosen presentation is not asserted to be globally isolated. The E and F profiles can overlap at special points.
+
+# Support enumeration
+
+Normalize the rows to 1, u, v and put w = u/v entrywise. Write P, Q, R for the chosen partitions of u, v, w. Each has one distinguished two-element block and three unordered three-element blocks. Fix:
+
+```math
+P=((0,1),(2,3,4),(5,6,7),(8,9,10)).
+```
+
+There are 15,400 partitions of this shape:
+
+```math
+\binom{11}{2}\frac{9!}{(3!)^3\,3!}=15400.
+```
+
+The stabilizer of P, consisting of the pair swap, permutations inside the three triangles, and permutations of the triangles, has 42 orbits on Q. Testing all R for these representatives gives 646,800 support presentations.
+
+For support classification use the intersection tensor:
+
+```math
+n_{ijk}=|P_i\cap Q_j\cap R_k|,\qquad 0\leq i,j,k\leq3.
+```
+
+This determines an ordered triple of partitions up to column permutation. The relevant symmetry group has 1,296 elements: six quotient permutations and six triangle-label permutations on each of the three axes. Canonicalization is checked independently by exhausting this full group on every resulting class representative. The feasible data comprise 147,642 presentations and 64,833 distinct raw intersection tensors; all are accounted for by the 6,904 classes.
+
+# Seven equations in six phases
+
+Rotate u and v so that the first entry on each row's chosen pair is 1; the other entry is then −1. Each row has three remaining continuous parameters, one phase for each triangle. Let x collect these six parameters.
+
+In increasing column order, an arbitrary triangle is a phase times one of the two orientations below. Its three cyclic rotations are absorbed in the phase:
+
+```math
+(1,\omega^{\sigma},\omega^{2\sigma}),\qquad
+\omega=e^{2\pi i/3},\quad \sigma\in\{1,-1\}.
+```
+
+There are nine triangle orientations altogether, three for each of P, Q, R. Let σ be their vector. Let D_P and D_Q select the six triangle phases on their respective triangles, with zero rows on the pairs. Write W = D_P − D_Q.
+
+Let ε_P, ε_Q, ε_R be 0 except at the second column of the corresponding pair, where they are 1. Let e_P, e_Q, e_R be 0 on pairs and (0,σ,2σ) on each triangle. For a block S of R let j_S be its first column. For every other column j in S define:
+
+```math
+\begin{aligned}
+A_{(S,j)}&=W_j-W_{j_S},\\
+f_{(S,j)}&=(\epsilon_R-\epsilon_P+\epsilon_Q)_j
+ -(\epsilon_R-\epsilon_P+\epsilon_Q)_{j_S},\\
+(B\sigma)_{(S,j)}&=(e_R-e_P+e_Q)_j-(e_R-e_P+e_Q)_{j_S}.
+\end{aligned}
+```
+
+The complete phase system is:
+
+```math
+Ax=\frac f2+\frac{B\sigma}{3}\pmod1,
+\qquad A\in M_{7\times6}(\mathbb Z),\quad B\in M_{7\times9}(\mathbb Z).
+```
+
+There is no further root-label problem: a sign gives all triangle orientations up to the phase already present, and the pair orientation is fixed.
+
+# Exact solution and verification
+
+Integer reduction supplies unimodular matrices U and V such that:
+
+```math
+UAV=\operatorname{diag}(d_0,\ldots,d_{r-1},0),
+\qquad U\in\mathrm{GL}_7(\mathbb Z),\quad V\in\mathrm{GL}_6(\mathbb Z).
+```
+
+For every one of the 646,800 systems, the calculation verifies this identity, both determinants being ±1, and positivity and divisibility of the nonzero diagonal entries. The zero rows impose exactly:
+
+```math
+(Uf)_i=0\pmod2,\qquad (UB\sigma)_i=0\pmod3,
+\qquad r\leq i<7.
+```
+
+The separation follows from coprimality of 2 and 3. Binary consistency leaves 152,132 support presentations. Exhausting all 512 orientation vectors leaves 147,642 feasible presentations.
+
+For every feasible orientation, all continuous solutions are given by:
+
+```math
+\begin{aligned}
+x&=Vy,\\
+y_i&=\frac{3(Uf)_i+2(UB\sigma)_i+6k_i}{6d_i}
+&& (0\leq i<r),\qquad 0\leq k_i<d_i,\\
+y_i&=t_i &&(r\leq i<6),\qquad t_i\in\mathbb R/\mathbb Z.
+\end{aligned}
+```
+
+Recover the two rows by:
+
+```math
+\begin{aligned}
+u_j(t)&=\exp\!\left(2\pi i\left[\epsilon_{P,j}/2+e_{P,j}/3+(D_Px)_j\right]\right),\\
+v_j(t)&=\exp\!\left(2\pi i\left[\epsilon_{Q,j}/2+e_{Q,j}/3+(D_Qx)_j\right]\right).
+\end{aligned}
+```
+
+These formulas ensure every required cycle, for all parameter values. Conversely, normalizing any original EEE triple gives its triangle orientations and a solution of this system, proving coverage.
+
+All feasible systems have rank at least two, giving at most four parameters. The largest Smith invariant is at most eight. Setting the free parameters to zero initially bounds the seed order by six times that invariant.
+
+The only potential order above 42 is 48, from invariant eight. Every orientation and torsion branch was checked for all seven such feasible presentations; their seed orders are only 6, 12 and 24. More generally, every orientation and branch of every feasible presentation with largest invariant at least three was audited — 3,511,344 phase components across 7,839 presentations. The actual orders are precisely 6, 12, 18, 24, 30, 36 and 42. Invariants one and two already restrict the order to a divisor of 6 or 12.
+
+There are 19,460,244 feasible orientation choices and 27,688,632 phase-component presentations before support reduction:
+
+| Dimension | Phase-component presentations |
+| --- | ---: |
+| 0 | 25,144,768 |
+| 1 | 2,468,752 |
+| 2 | 73,592 |
+| 3 | 1,504 |
+| 4 | 16 |
+
+These counts include repeated descriptions and are not counts of inequivalent matrices or global connected components.
+
+The orientation masks were generated using Gray-code updates and checked bit by bit by independent direct dot products. Support canonicalization was checked against all 1,296 group elements. A separate arithmetic audit reran all 646,800 integer reductions with safe-integer guards: its largest tracked arithmetic intermediate was 80, the largest entry in U was 14, and the largest entry in V was 11. The matrix-product bounds are far below the exact-integer limit of JavaScript numbers. No numerical tolerance is used.
+
+# A four-parameter family
+
+Let ζ = exp(2πi/12) and let B be the three-by-five matrix obtained by raising ζ entrywise to:
+
+```math
+\begin{pmatrix}
+0&0&0&0&0\\
+0&6&3&7&11\\
+0&3&6&11&7
+\end{pmatrix}.
+```
+
+Every row quotient of B splits as 2+3. With the standard three-by-three Fourier matrix F₃, form:
+
+```math
+H(s,t,a,b)=
+\left[\ B\ \middle|\ \operatorname{diag}(1,s,t)F_3\ \middle|\
+\operatorname{diag}(1,a,b)F_3\ \right],
+\qquad s,t,a,b\in\mathbb T.
+```
+
+Each quotient now has profile 2+3+3+3. Cross ratios recover the four parameters, so the dimension is genuinely four modulo the finite permutation ambiguities.
+
+This construction cannot gain a fourth row while requiring its last two three-column blocks to remain separate triangles against all three existing rows: the restrictions on either block already form a full F₃. Extensions using other decompositions remain untested.
+
+# A genuine order 42 seed
+
+Take the first row to be all ones. With ξ = exp(2πi/42), take the other rows to be ξ raised entrywise to:
+
+```math
+\begin{pmatrix}
+0&21&38&24&10&18&4&32&41&13&27\\
+0&32&21&18&24&4&10&5&38&33&19
+\end{pmatrix}.
+```
+
+The chosen cycles, with columns numbered from zero, are:
+
+| Quotient | Pair | Triangle 1 | Triangle 2 | Triangle 3 |
+| --- | --- | --- | --- | --- |
+| u | 0,1 | 2,3,4 | 5,6,7 | 8,9,10 |
+| v | 0,2 | 1,3,5 | 4,6,8 | 7,9,10 |
+| u/v | 3,7 | 0,4,5 | 1,2,8 | 6,9,10 |
+
+The cross ratio from the first two rows and columns 0,8 is ξ⁴¹ or its inverse. It is primitive of order 42, so this matrix has no equivalent Butson representative of root order not divisible by 42. Its chosen presentation is zero-dimensional; this does not assert global isolation.
+
+# Reproduction source
+
+The calculation was run in the available JavaScript runtime. The following standalone source uses no external packages. Save it as eee.js and run “node eee.js --write” to regenerate the census, verification summary, chosen support classes and examples as JSON files. The source checks all Smith certificates and all orientation masks, audits the higher root orders, and independently verifies the support canonicalization.
+
+The ordinary execution workspace was unavailable during this calculation, so no PDF or downloadable code archive was produced in this session. The mathematical result and complete source are preserved here.
+
+```javascript
+"use strict";
+// Exact EEE census at width 11. No dependencies. Run: node eee.js --write
+
+function combinations(a,k){
+ const out=[]; function rec(start,p){if(p.length===k){out.push(p.slice());return;}for(let i=start;i<=a.length-(k-p.length);i++){p.push(a[i]);rec(i+1,p);p.pop();}}rec(0,[]);return out;
+}
+function triples(rem){if(!rem.length)return [[]];const out=[];for(const more of combinations(rem.slice(1),2)){const b=[rem[0],...more],s=new Set(b);for(const r of triples(rem.filter(x=>!s.has(x))))out.push([b,...r]);}return out;}
+function cmp(a,b){for(let i=0;i<a.length;i++){if(Array.isArray(a[i])){const c=cmp(a[i],b[i]);if(c)return c;}else if(a[i]!==b[i])return a[i]-b[i];}return 0;}
+function key(p){return p.map(b=>b.join(",")).join("|");}
+function partitions(){const all=Array.from({length:11},(_,i)=>i),out=[];for(const pair of combinations(all,2)){const s=new Set(pair);for(const t of triples(all.filter(x=>!s.has(x))))out.push([pair,...t]);}return out.sort(cmp);}
+const BASE=[[0,1],[2,3,4],[5,6,7],[8,9,10]];
+function action(p,g){return [p[0].map(x=>g[x]).sort((a,b)=>a-b),...p.slice(1).map(b=>b.map(x=>g[x]).sort((a,b)=>a-b)).sort(cmp)];}
+function orbits(parts){
+ const index=new Map(parts.map((p,i)=>[key(p),i])),gens=[];
+ for(const [a,b] of [[0,1],[2,3],[3,4],[5,6],[6,7],[8,9],[9,10]]){const g=Array.from({length:11},(_,i)=>i);[g[a],g[b]]=[g[b],g[a]];gens.push(g);}
+ gens.push([0,1,5,6,7,2,3,4,8,9,10]);gens.push([0,1,2,3,4,8,9,10,5,6,7]);
+ const seen=new Uint8Array(parts.length),out=[];
+ for(let i=0;i<parts.length;i++)if(!seen[i]){
+  seen[i]=1;const todo=[i];for(let h=0;h<todo.length;h++)for(const g of gens){const j=index.get(key(action(parts[todo[h]],g)));if(j===undefined)throw Error("bad action");if(!seen[j]){seen[j]=1;todo.push(j);}}
+  out.push({index:i,representative:parts[i],size:todo.length});
+ }return out;
+}
+function maps(p){
+ const block=Array(11),pos=Array(11),eps=Array(11).fill(0);
+ p.forEach((b,k)=>b.forEach((j,h)=>{block[j]=k;pos[j]=h;if(k===0)eps[j]=h;}));
+ return {block,pos,eps};
+}
+function matrices(q,r){
+ const p=maps(BASE),qq=maps(q),rr=maps(r),w=[],off=[];
+ for(let j=0;j<11;j++){
+  const a=Array(6).fill(0),b=Array(9).fill(0);
+  if(p.block[j]){a[p.block[j]-1]=1;b[p.block[j]-1]=-p.pos[j];}
+  if(qq.block[j]){a[qq.block[j]+2]=-1;b[qq.block[j]+2]=qq.pos[j];}
+  if(rr.block[j])b[rr.block[j]+5]=rr.pos[j];
+  w.push(a);off.push(b);
+ }
+ const h=Array.from({length:11},(_,j)=>rr.eps[j]-p.eps[j]+qq.eps[j]),A=[],f=[],B=[];
+ for(const block of r){const ref=block[0];for(const j of block.slice(1)){A.push(w[j].map((x,i)=>x-w[ref][i]));f.push(h[j]-h[ref]);B.push(off[j].map((x,i)=>x-off[ref][i]));}}
+ return {A,f,B};
+}
+
+function assert(x,msg="assertion"){if(!x)throw Error(msg);}
+function ident(n){return Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>+(i===j)));}
+function rowadd(a,i,j,q){for(let k=0;k<a[0].length;k++)a[i][k]+=q*a[j][k];}
+function coladd(a,i,j,q){for(const r of a)r[i]+=q*r[j];}
+function colswap(a,i,j){for(const r of a)[r[i],r[j]]=[r[j],r[i]];}
+function snf(input){
+ const a=input.map(r=>r.slice()),u=ident(7),v=ident(6);let k=0;
+ for(;k<6;k++){
+  let pi=-1,pj=-1;
+  for(let i=k;i<7;i++)for(let j=k;j<6;j++)if(a[i][j]&&(pi<0||Math.abs(a[i][j])<Math.abs(a[pi][pj]))){pi=i;pj=j;}
+  if(pi<0)break;[a[k],a[pi]]=[a[pi],a[k]];[u[k],u[pi]]=[u[pi],u[k]];colswap(a,k,pj);colswap(v,k,pj);
+  for(let loop=0;;loop++){
+   assert(loop<500,"Smith loop");let changed=false;
+   for(let i=k+1;i<7;i++)if(a[i][k]){
+    const q=Math.trunc(a[i][k]/a[k][k]);rowadd(a,i,k,-q);rowadd(u,i,k,-q);
+    if(a[i][k]){[a[i],a[k]]=[a[k],a[i]];[u[i],u[k]]=[u[k],u[i]];}changed=true;break;
+   }if(changed)continue;
+   for(let j=k+1;j<6;j++)if(a[k][j]){
+    const q=Math.trunc(a[k][j]/a[k][k]);coladd(a,j,k,-q);coladd(v,j,k,-q);
+    if(a[k][j]){colswap(a,j,k);colswap(v,j,k);}changed=true;break;
+   }if(changed)continue;
+   let bi=-1;for(let i=k+1;i<7;i++)for(let j=k+1;j<6;j++)if(a[i][j]%a[k][k])bi=i;
+   if(bi<0)break;rowadd(a,k,bi,1);rowadd(u,k,bi,1);
+  }
+  if(a[k][k]<0){a[k]=a[k].map(x=>-x);u[k]=u[k].map(x=>-x);}
+ }
+ return {D:a,U:u,V:v,rank:k,diag:Array.from({length:k},(_,i)=>a[i][i])};
+}
+function det(input){
+ const a=input.map(r=>r.slice()),n=a.length;let old=1,sign=1;
+ for(let k=0;k<n-1;k++){
+  if(!a[k][k]){let j=k+1;while(j<n&&!a[j][k])j++;if(j===n)return 0;[a[k],a[j]]=[a[j],a[k]];sign=-sign;}
+  const z=a[k][k];
+  for(let i=k+1;i<n;i++)for(let j=k+1;j<n;j++){
+   const num=z*a[i][j]-a[i][k]*a[k][j];assert(Number.isSafeInteger(num)&&num%old===0,"det integer");a[i][j]=num/old;
+  }for(let i=k+1;i<n;i++)a[i][k]=0;old=z;
+ }return sign*a[n-1][n-1];
+}
+function mm(a,b){
+ const out=Array.from({length:a.length},()=>Array(b[0].length).fill(0));
+ for(let i=0;i<a.length;i++)for(let k=0;k<b.length;k++)if(a[i][k])for(let j=0;j<b[0].length;j++)out[i][j]+=a[i][k]*b[k][j];
+ return out;
+}
+function mod(x,n){return (x%n+n)%n;}
+function popcount(x){x=x-((x>>>1)&0x55555555);x=(x&0x33333333)+((x>>>2)&0x33333333);return (((x+(x>>>4))&0x0F0F0F0F)*0x01010101)>>>24;}
+function zeroMask(coeff,cache){
+ let c=coeff.map(x=>mod(x,3));const first=c.find(x=>x);if(first===2)c=c.map(x=>x*2%3);
+ const id=c.join("");if(cache[id])return cache[id];
+ const out=Array(16).fill(0);let sum=-c.reduce((a,b)=>a+b,0),prev=0;
+ for(let k=0;k<512;k++){
+  const gray=k^(k>>>1);
+  if(k){const bit=31-Math.clz32(gray^prev);sum+=(gray>>bit&1?2:-2)*c[bit];}
+  if(mod(sum,3)===0)out[gray>>>5]=(out[gray>>>5]|(1<<(gray&31)))>>>0;prev=gray;
+ }
+ // Independent direct dot products verify every bit of the Gray-code mask.
+ for(let mask=0;mask<512;mask++){let s=0;for(let j=0;j<9;j++)s+=c[j]*(mask>>j&1?1:-1);assert(((out[mask>>>5]>>>(mask&31))&1)===+(mod(s,3)===0),"orientation mask");}
+ cache[id]=out;return out;
+}
+function seed(q,r,s,mat,mask,branch){
+ const dmax=s.diag.length?s.diag[s.diag.length-1]:1,M=6*dmax;
+ const sig=Array.from({length:9},(_,i)=>mask>>i&1?1:-1);
+ const rhs=mat.f.map((f,i)=>3*f+2*mat.B[i].reduce((t,x,k)=>t+x*sig[k],0));
+ const ur=mm(s.U,rhs.map(x=>[x])).map(x=>x[0]);
+ const theta=Array.from({length:6},(_,i)=>mod(s.diag.reduce((t,d,j)=>t+s.V[i][j]*(M/(6*d))*(ur[j]+6*branch[j]),0),M));
+ const rows=[],basis=[];
+ for(const [part,start] of [[BASE,0],[q,3]]){
+  const m=maps(part),e=[],b=[];
+  for(let j=0;j<11;j++){
+   e.push(mod(m.block[j]?theta[start+m.block[j]-1]+M/3*m.pos[j]*sig[start+m.block[j]-1]:M/2*m.pos[j],M));
+   b.push(m.block[j]?s.V[start+m.block[j]-1].slice(s.rank):Array(6-s.rank).fill(0));
+  }rows.push(e);basis.push(b);
+ }
+ const w=rows[0].map((x,j)=>mod(x-rows[1][j],M));
+ const wb=basis[0].map((x,j)=>x.map((y,k)=>y-basis[1][j][k]));
+ for(const [e,b,p] of [[rows[0],basis[0],BASE],[rows[1],basis[1],q],[w,wb,r]])for(const block of p){
+  const first=block[0],delta=block.map(j=>mod(e[j]-e[first],M)).sort((a,b)=>a-b);
+  assert(delta.every((v,k)=>v===k*M/block.length),"seed cycle");
+  assert(block.every(j=>b[j].every((v,k)=>v===b[first][k])),"basis cycle");
+ }
+ const gcd=(a,b)=>b?gcd(b,a%b):a;
+ let order=1;for(const row of rows)for(const x of row){const o=M/gcd(M,mod(x-row[0],M));order=order/gcd(order,o)*o;}
+ return {modulus:M,exponents:rows,basis,supports:[BASE,q,r],cross_ratio_order:order,orientation:mask,branch};
+}
+function runOrbit(vi,parts,reps,state){
+ const q=reps[vi].representative,codes=[];
+ for(let wi=0;wi<parts.length;wi++){
+  const r=parts[wi],mat=matrices(q,r),s=snf(mat.A);
+  assert(s.U.flat().every(x=>Math.abs(x)<=1024)&&s.V.flat().every(x=>Math.abs(x)<=1024),"matrix arithmetic bound");
+  SAFE.matrices++;SAFE.maxU=Math.max(SAFE.maxU,...s.U.flat().map(Math.abs));SAFE.maxV=Math.max(SAFE.maxV,...s.V.flat().map(Math.abs));
+  assert(Math.abs(det(s.U))===1&&Math.abs(det(s.V))===1,"unimodular");
+  const check=mm(mm(s.U,mat.A),s.V);
+  for(let i=0;i<7;i++)for(let j=0;j<6;j++)assert(check[i][j]===(i===j&&i<s.rank?s.diag[i]:0),"Smith identity");
+  assert(s.diag.every((x,i)=>Number.isSafeInteger(x)&&x>0&&(!i||x%s.diag[i-1]===0)),"Smith divisibility");
+  const dk=s.diag.join(",");state.smith[dk]=(state.smith[dk]||0)+1;
+  const uf=mm(s.U,mat.f.map(x=>[x])).map(x=>x[0]);
+  const binary=uf.slice(s.rank).every(x=>x%2===0);
+  let count=0,allowed=null;
+  if(binary){
+   state.binary++;
+   const UB=mm(s.U,mat.B);allowed=Array(16).fill(0xffffffff);
+   for(let i=s.rank;i<7;i++){const m=zeroMask(UB[i],state.cache);for(let j=0;j<16;j++)allowed[j]=(allowed[j]&m[j])>>>0;}
+   count=allowed.reduce((t,x)=>t+popcount(x),0);
+  }
+  const tor=s.diag.reduce((a,b)=>a*b,1),maxd=s.diag.length?s.diag[s.rank-1]:1,dim=6-s.rank;
+  assert(tor<256&&maxd<256);
+  // All entries remain exact integers; this code is arithmetic, not bitwise packing.
+  const code=count?1+dim+8*maxd+2048*tor+524288*count:0;
+  codes.push(code);
+  if(count){
+   state.feasible++;state.orientations+=count;state.components+=count*tor;
+   state.byDim[dim]=(state.byDim[dim]||0)+count*tor;
+   state.supportDim[dim]=(state.supportDim[dim]||0)+1;
+   state.maxd[maxd]=(state.maxd[maxd]||0)+1;
+   let mask=0;while(!((allowed[mask>>>5]>>>(mask&31))&1))mask++;
+   if(!state.examples["d"+dim]||!state.examples["m"+maxd]){
+    const branches=[];function rec(a){if(a.length===s.rank){branches.push(a.slice());return;}for(let k=0;k<s.diag[a.length];k++){a.push(k);rec(a);a.pop();}}rec([]);
+    for(const b of branches){
+     const ex={vi,wi,dimension:dim,...seed(q,r,s,mat,mask,b)};
+     state.examples["r"+ex.cross_ratio_order]??=ex;
+     state.examples["d"+dim]??=ex;
+     state.examples["m"+maxd]??=ex;
+    }
+   }
+  }
+ }
+ state.done=vi+1;return codes;
+}
+
+const SAFE={matrices:0,maxTerm:0,maxU:0,maxV:0};
+function checked(x){assert(Number.isSafeInteger(x),"unsafe integer");SAFE.maxTerm=Math.max(SAFE.maxTerm,Math.abs(x));return x;}
+function rowadd(a,i,j,q){for(let k=0;k<a[0].length;k++)a[i][k]=checked(a[i][k]+checked(q*a[j][k]));}
+function coladd(a,i,j,q){for(const r of a)r[i]=checked(r[i]+checked(q*r[j]));}
+function det(input){
+ const a=input.map(r=>r.slice()),n=a.length;let old=1,sign=1;
+ for(let k=0;k<n-1;k++){
+  if(!a[k][k]){let j=k+1;while(j<n&&!a[j][k])j++;if(j===n)return 0;[a[k],a[j]]=[a[j],a[k]];sign=-sign;}
+  const z=a[k][k];
+  for(let i=k+1;i<n;i++)for(let j=k+1;j<n;j++){
+   const num=checked(checked(z*a[i][j])-checked(a[i][k]*a[k][j]));assert(num%old===0);a[i][j]=checked(num/old);
+  }for(let i=k+1;i<n;i++)a[i][k]=0;old=z;
+ }return checked(sign*a[n-1][n-1]);
+}
+function auditSafe(parts,reps,start,end){
+ for(let vi=start;vi<end;vi++)for(const r of parts){
+  const s=snf(matrices(reps[vi].representative,r).A);
+  assert(Math.abs(det(s.U))===1&&Math.abs(det(s.V))===1);
+  SAFE.maxU=Math.max(SAFE.maxU,...s.U.flat().map(Math.abs));SAFE.maxV=Math.max(SAFE.maxV,...s.V.flat().map(Math.abs));SAFE.matrices++;
+ }
+ assert(7*6*2*SAFE.maxU*SAFE.maxV<Number.MAX_SAFE_INTEGER,"matrix product bound");
+ return SAFE;
+}
+
+function rootAudit(parts,reps,codesByOrbit){
+ const gcd=(a,b)=>b?gcd(b,a%b):a,orders={},byMax={},examples={};let cases=0,components=0;
+ for(let vi=0;vi<reps.length;vi++)for(let wi=0;wi<parts.length;wi++){
+  const code=codesByOrbit[vi][wi];if(!code)continue;
+  const maxd=Math.floor((code-1)/8)%256;if(maxd<3)continue;
+  cases++;
+  const q=reps[vi].representative,r=parts[wi],mat=matrices(q,r),s=snf(mat.A),uf=mm(s.U,mat.f.map(x=>[x])).map(x=>x[0]),UB=mm(s.U,mat.B);
+  const branches=[];function rec(a){if(a.length===s.rank){branches.push(a.slice());return;}for(let k=0;k<s.diag[a.length];k++){a.push(k);rec(a);a.pop();}}rec([]);
+  let counted=0;
+  for(let mask=0;mask<512;mask++){
+   const sig=Array.from({length:9},(_,j)=>mask>>j&1?1:-1),ug=UB.map(row=>row.reduce((t,x,j)=>t+x*sig[j],0));
+   if(!ug.slice(s.rank).every(x=>x%3===0))continue;
+   for(const b of branches){
+    let order=6;
+    for(let j=0;j<s.rank;j++){
+     const den=6*s.diag[j],num=3*uf[j]+2*ug[j]+6*b[j],v=den/gcd(den,mod(num,den));
+     order=order/gcd(order,v)*v;
+    }
+    orders[order]=(orders[order]||0)+1;byMax[maxd]??={};byMax[maxd][order]=(byMax[maxd][order]||0)+1;counted++;components++;
+    if(!examples[order])examples[order]={vi,wi,dimension:6-s.rank,...seed(q,r,s,mat,mask,b)};
+   }
+  }
+  assert(counted===Math.floor((code-1)/524288)*(Math.floor((code-1)/2048)%256),"root count");
+ }
+ return {cases,components,orders,byMax,examples};
+}
+
+function perms3(){
+ const out=[];for(let a=0;a<3;a++)for(let b=0;b<3;b++)for(let c=0;c<3;c++)if(a!==b&&a!==c&&b!==c)out.push([a,b,c]);return out;
+}
+function partialTransforms(){
+ const pp=perms3(),out=[];
+ for(const axis of pp)for(const pa of pp)for(const pb of pp){
+  const a=[0,...pa.map(x=>x+1)],b=[0,...pb.map(x=>x+1)],m=[];
+  for(let i=0;i<4;i++)for(let j=0;j<4;j++)for(let k=0;k<4;k++){
+   const q=[];q[axis[0]]=a[i];q[axis[1]]=b[j];q[axis[2]]=k;m.push(16*q[0]+4*q[1]+q[2]);
+  }out.push(m);
+ }return out;
+}
+function canonical(t,transforms){
+ let best=t;
+ for(const m of transforms){
+  const order=[1,2,3];
+  order.sort((a,b)=>{for(let c=0;c<16;c++){const d=t.charCodeAt(m[4*c+a])-t.charCodeAt(m[4*c+b]);if(d)return d;}return 0;});
+  order.unshift(0);
+  let cmp=0;
+  for(let j=0;j<64;j++){
+   const c=t.charCodeAt(m[(j&~3)+order[j&3]])-best.charCodeAt(j);
+   if(c){cmp=c;break;}
+  }
+  if(cmp<0){const v=Array(64);for(let j=0;j<64;j++)v[j]=t.charCodeAt(m[(j&~3)+order[j&3]]);best=String.fromCharCode(...v);}
+ }
+ return best;
+}
+function classifyBatch(raw,start,end,entries){
+ const tr=partialTransforms(),classes=new Map(entries);
+ for(let i=start;i<end;i++){
+  const [key,r]=raw[i],c=canonical(key,tr),old=classes.get(c);
+  if(old){assert(old.code===r.code,"class invariant");old.presentations+=r.presentations;old.raw_tensors++;}
+  else classes.set(c,{...r,raw_tensors:1});
+ }
+ return Array.from(classes);
+}
+
+function fullTransforms(){
+ const pp=perms3(),out=[];
+ for(const axis of pp)for(const pa of pp)for(const pb of pp)for(const pc of pp){
+  const maps=[[0,...pa.map(x=>x+1)],[0,...pb.map(x=>x+1)],[0,...pc.map(x=>x+1)]],m=[];
+  for(let i=0;i<4;i++)for(let j=0;j<4;j++)for(let k=0;k<4;k++){
+   const q=[];q[axis[0]]=maps[0][i];q[axis[1]]=maps[1][j];q[axis[2]]=maps[2][k];m.push(16*q[0]+4*q[1]+q[2]);
+  }assert(new Set(m).size===64);out.push(m);
+ }assert(out.length===1296);return out;
+}
+function verifyClasses(parts,reps,entries){
+ const tr=fullTransforms(),pm=maps(BASE).block,rm=parts.map(x=>maps(x).block),qm=reps.map(x=>maps(x.representative).block);
+ let checked=0,covered=0,raw=0;const seen=new Set();
+ for(const [key,r] of entries){
+  assert(!seen.has(key),"duplicate class");seen.add(key);
+  const t=Array(64).fill(0);for(let j=0;j<11;j++)t[16*pm[j]+4*qm[r.vi][j]+rm[r.wi][j]]++;
+  let equal=false;
+  for(const m of tr){
+   let cmp=0;for(let j=0;j<64;j++){cmp=t[m[j]]-key.charCodeAt(j);if(cmp)break;}
+   assert(cmp>=0,"noncanonical support");if(cmp===0)equal=true;
+  }assert(equal,"unreachable representative");checked++;covered+=r.presentations;raw+=r.raw_tensors;
+ }
+ return {verified:true,classes:checked,presentations:covered,raw_tensors:raw,group_size:tr.length};
+}
+
+function buildRaw(parts,reps,codesByOrbit){
+ const p=maps(BASE).block,rs=parts.map(x=>maps(x).block),qs=reps.map(x=>maps(x.representative).block),raw=new Map();
+ for(let vi=0;vi<reps.length;vi++)for(let wi=0;wi<parts.length;wi++){
+  const code=codesByOrbit[vi][wi];if(!code)continue;
+  const a=Array(64).fill(0);for(let j=0;j<11;j++)a[16*p[j]+4*qs[vi][j]+rs[wi][j]]++;
+  const k=String.fromCharCode(...a),r=raw.get(k);
+  if(r){assert(r.code===code,"raw invariant");r.presentations++;}
+  else raw.set(k,{code,vi,wi,presentations:1});
+ }return Array.from(raw);
+}
+function reproduceEEE(){
+ const parts=partitions(),reps=orbits(parts);
+ assert(parts.length===15400&&reps.length===42);
+ assert(reps.reduce((s,r)=>s+r.size,0)===15400);
+ const state={done:0,smith:{},binary:0,feasible:0,orientations:0,components:0,byDim:{},supportDim:{},maxd:{},examples:{},cache:{}},codes=[];
+ for(let vi=0;vi<reps.length;vi++){codes.push(runOrbit(vi,parts,reps,state));console.error("Support orbit",vi+1,"of",reps.length);}
+ assert(state.binary===152132&&state.feasible===147642);
+ assert(state.orientations===19460244&&state.components===27688632);
+ const roots=rootAudit(parts,reps,codes);
+ assert(Object.keys(roots.orders).map(Number).sort((a,b)=>a-b).join(",")==="6,12,18,24,30,36,42");
+ const raw=buildRaw(parts,reps,codes),classes=classifyBatch(raw,0,raw.length,[]),classCheck=verifyClasses(parts,reps,classes);
+ assert(classes.length===6904&&classCheck.presentations===147642&&raw.length===64833);
+ const dimensions={},maxSmith={};
+ for(const [key,r] of classes){const d=(r.code-1)%8,m=Math.floor((r.code-1)/8)%256;dimensions[d]=(dimensions[d]||0)+1;maxSmith[m]=(maxSmith[m]||0)+1;}
+ assert(JSON.stringify(dimensions)==='{"0":5230,"1":1544,"2":121,"3":8,"4":1}');
+ const summary={verified:true,partitions:parts.length,relative_orbits:reps.length,support_presentations:parts.length*reps.length,binary_feasible:state.binary,feasible_presentations:state.feasible,feasible_orientation_choices:state.orientations,phase_components:state.components,phase_components_by_dimension:state.byDim,feasible_support_classes:classes.length,classes_by_dimension:dimensions,max_smith_by_class:maxSmith,seed_orders:[6,12,18,24,30,36,42],class_check:classCheck,integer_audit:SAFE};
+ console.log(JSON.stringify(summary,null,2));
+ if(typeof process!=="undefined"&&process.argv.includes("--write")){
+  const fs=require("node:fs");
+  fs.writeFileSync("eee_verification.json",JSON.stringify(summary,null,2)+"\n");
+  fs.writeFileSync("eee_support_classes.json",JSON.stringify(classes.map(([key,r])=>({tensor:Array.from(key,x=>x.charCodeAt(0)),...r})),null,2)+"\n");
+  fs.writeFileSync("eee_examples.json",JSON.stringify({four_parameters:state.examples.d4,root_examples:roots.examples},null,2)+"\n");
+ }
+ return summary;
+}
+reproduceEEE();
+
+```
+
+======================================================================
+bbb_common / n11_BBB_common (4 November 2026)
+======================================================================
+
+Scope: the 19 displayed common-support triples T_f(q,s,t), with arbitrary unit
+q,s,t outside an explicit finite union of monomial equations. This is not the
+extension classification of all BBB presentations. The five linear head maps
+have maximum extension 4, and the fourteen other maps maximum extension 3.
+
+Commands from the package root:
+  python3 run.py verify bbb_common
+  python3 run.py reproduce bbb_common
+To use two concurrent scan processes, prepare the component, enter its printed
+runtime directory, and run: python3 run.py --workers 2.
+
+The sources are primary.cpp (forest potentials), audit.cpp (explicit component
+potentials, reverse anchor and prime order), verify.py (independent literal
+monomial cycle covers and reduction), and run.py (reproduction driver).
+The two C++ sources share their support-enumeration design; they are independent
+checks of the phase propagation and traversal, not unrelated algorithms.
+Compile generic scans with -DGENERIC, adding -DAUDIT for audit.cpp, as run.py does.
+No root-grid cutoff is imposed on old or new phases. No presentation cutoff is
+reached; the independent factorial counts are checked for all five profiles.
+
+For each profile B,C,D,E,F the files primary_P.txt and audit_P.txt contain the
+fourth-row records, prefixed by the zero-based index in head_rows.txt. Their
+.txt.pairs files contain the first-stage records for (1,u). Their .log files
+record the exhaustive initial-presentation and retained-record counts.
+
+A row key has 67 integers. The first 12 describe three parameter-lattice rows
+(a,b,c,e), meaning q^a s^b t^c = exp(2*pi*i*e/840). They are all zero in the
+generic calculation. Each subsequent block of five integers is (g,a,b,c,e),
+meaning Z_g q^a s^b t^c exp(2*pi*i*e/840). Distinct g give independent unit
+phases, Z_0=1, with each component anchored at its first column. Overall row
+phase is removed. Deduplication is by these normalized records, not by matrix
+equivalence and not by maximal-family containment.
+
+The base_pair.txt file specifies u with lines (e,a,b,c), using root denominator
+14 (not 840). head_rows.txt gives all 19 f permutations, in lexical order.
+
+The audit_P.txt.exceptional files contain rejected nonconstant equations in
+the internal denominator-840 format. Their union has 3038 records, coefficients
+of absolute value at most 4, and root exponents divisible by 4. The derived
+exceptional_union.txt uses denominator 210: a line a b c d means
+q^a s^b t^c = exp(2*pi*i*d/210). This is the exact format used in the theorem.
+The union is sufficient, not minimal. These equations need further analysis;
+the generic result says nothing about extensions on their union.
+
+First-stage counts: B 2964, F 59136, others zero. Final counts: B 1420, others
+zero. Each linear head has four circles plus 280 fixed specializations already
+contained in those circles. Thus there are only 20 circle families in total.
+Many fixed records of the FIRST stage are not similarly redundant; all are
+retained and independently checked. They must not be removed by analogy with
+the final-stage reduction.
+
+verify.py enumerates all head labels independently, checks the complete saved
+sets agree, checks the expected exhaustive presentation counts in the logs,
+checks a prime-cycle cover for every saved row against every applicable old
+row, and verifies every final row belongs to the printed circle families.
+It also verifies the exceptional-record bounds and the BDD witness. Verification
+alone does not regenerate the exhaustive exclusion searches; reproduce does.
+
+witness_D.txt is one exact first-stage BDD witness with q=exp(2*pi*i*588/840),
+s=exp(2*pi*i*408/840). Its specialized rows have level 70. The independent
+verifier writes their exponents and all cycle covers to verification.json.
+The -DPAIR_ONLY -DFIRST_WITNESS build intentionally stops at its first positive
+record, after 7585 initial presentations. This witness search is NOT a complete
+exceptional census, and the witness is not a fourth row for prescribed T_f.
+Exploratory incomplete full-torus scans are not used in any exclusion claim.
+
+The new sources adapt the exact machinery of ddd_generic; the old component
+and its source files are unchanged. execution.json records the complete current
+runs. Reproduction overwrites generated data only in the prepared work folder.
+
+
+======================================================================
+ccc_common / n11_CCC_common (4 November 2026)
+======================================================================
+
+Scope: the common-block CCC triples S_a(s,r,t,b), with a=2,3,4 and four free
+unit phases. Their generic regular extensions have maximum total size five.
+Every CCC presentation of phase dimension four has this common block support.
+This does not classify other CCC supports or the exceptional parameter loci.
+The existing six-parameter mixed five-row family is consequently generically
+maximal: its rows 0,1,3 form S_3(s,s*a,p,p*b), and this parameter map is onto.
+
+With w=exp(2*pi*i/15), omega=w^5 and v_h=(1,omega^h,omega^(2*h)), the rows are
+  (1 | v_0 | v_0),
+  ((w^(3*j))_j=0..4 | s*v_1 | r*v_1),
+  ((w^(3*a*j))_j=0..4 | t*v_2 | b*v_2).
+For each a, the six fourth-row circles have k in F_5 minus {0,1,a}, h=0,1,2:
+  ((w^(3*k*j))_j=0..4 | z*v_h | -z*c_h*v_h),
+where c_0=1,c_1=r/s,c_2=b/t and z is an arbitrary unit phase. Two such rows
+are compatible exactly when both their k and their h labels differ. This is
+a six-cycle, with clique number two. All these rows and compatible pairs are
+valid even on the exceptional set; exhaustiveness is asserted only off it.
+
+Commands at the package root:
+  python3 run.py verify ccc_common
+  python3 run.py reproduce ccc_common
+For two scan processes, prepare ccc_common, enter its printed runtime directory,
+and run python3 run.py --workers 2. The default uses one process. A complete
+reproduction took about nine minutes with two processes in the development
+workspace. Exact verification of the saved certificates takes only seconds.
+
+primary.cpp uses a forest of phase potentials. audit.cpp maintains explicit
+component labels and potentials, reverses cycle-anchor order and reverses
+prime order. Their support-enumeration design is shared; their phase-state
+representations and traversal orders differ. Neither scan has a search cap.
+Both record rejected nonconstant old-parameter equations. The theorem uses
+the audit union. No finite root-grid assumption is made about the parameters
+or the new row's remaining component phases.
+
+pair.txt specifies the second old row in eleven lines (s,r,t,b,e): integer
+parameter exponents followed by the root exponent e modulo 210. heads.txt has
+the three normalized pentagon-label permutations, in lexical order.
+
+Each primary_P.txt or audit_P.txt line gives a head index (0,1,2), followed by
+a 66-integer row key. Each six-integer block (g,i,j,k,l,e) represents the entry
+Z_g*s^i*r^j*t^k*b^l*exp(2*pi*i*e/210). Z_0=1; the other component phases are
+independent. A component is normalized at its first column. The .txt.pairs
+files omit the head index and record rows regular against the first two old
+rows. Their phase exponents in t,b are zero before free components are restored.
+
+The .txt.exceptional0 files record equations rejected at the pair stage;
+.txt.exceptional1 records those rejected while imposing the third row. A line
+i j k l e means s^i*r^j*t^k*b^l=exp(2*pi*i*e/210). Nonzero integer characters
+are sign-normalized by their first nonzero coefficient. exceptional_union.txt
+is the union of the audit files. It is a sufficient exceptional set, not a
+minimal one or a count of inequivalent loci. Detailed counts and coefficient
+bounds are recorded in verification.json.
+
+The complete pair counts are B=0,C=4383,D=672,E=0,F=0. Final counts over all
+three heads are C=852,D=426 and zero otherwise. For each head, the C records
+are four circles plus 280 fixed specializations on them; the D records are
+two circles plus 140 fixed specializations. All raw records are retained.
+
+verify.py independently enumerates the 24 normalized pentagon permutations
+and all 4620 relative support partitions for the zero-rank support check.
+It compares complete scan outputs, checks their factorial presentation counts,
+checks exact prime-cycle covers for all retained rows, and reduces every final
+row to one of the six circle formulas. It then checks all circle inner products
+in the exact cyclotomic ring Z[w_210], with the old parameters and two new row
+phases kept as independent Laurent variables. It verifies the graph has six
+edges, every vertex has degree two, and no triangle is present. The hand proof
+uses the resulting constants 5 and 6 to exclude cancellation for all unit phases.
+
+Verification alone checks saved evidence. Full regeneration additionally
+repeats both exhaustive searches. Generated outputs are written only in the
+prepared work directory. The sources use Python's standard library and C++17.
+The earlier BBB and DDD source files remain unchanged.
+
+
+EEE_GENERIC: FOUR-PARAMETER EXTENSION TEST (4 November 2026)
+
+Scope. H(s,t,a,b)=[B | diag(1,s,t)F3 | diag(1,a,b)F3], with
+B exponents modulo 12 given by (0,0,0,0,0), (0,6,3,7,11),
+(0,3,6,11,7). All four parameters and all new row phases range over T.
+Every four-dimensional chosen EEE phase presentation is equivalent to H or
+its entrywise conjugate. Conjugation is not included in ordinary equivalence.
+The uniqueness of the dimension-four support type comes from the existing
+eee census; this component checks the normal form within that support type,
+including the four core choices and four choices on the two common triangles.
+
+Every A quotient of a proposed new row is excluded uniformly. In an AEE or
+AEF triple the simple bipartite support graph must be connected: a separate
+component of at most five edges would need two pair vertices on the E side.
+All E entry ratios would then be in mu_66, whereas each relevant old quotient
+contains i. The verifier separately checks all 27 EE and 234 EF labelled
+simple support graphs with the prescribed degree sequences.
+
+Two complete exact scans each examine 1,480,490 decorated presentations:
+profile       B       C       D       E       F
+initial  712800  443520  166320  123200   34650
+pairs         0       0       0    4184    6418
+final         0       0       0       0       0
+
+The C++ implementations differ in phase-component representation and cycle
+anchor/prime order. Every pair record is independently checked using literal
+Laurent-monomial prime-cycle covers in verify.py. No search cap or numerical
+tolerance is used. The generic scans record each nonconstant closing equation
+before rejecting that branch. Their retained final row sets are empty.
+
+The audit equations form a sufficient exceptional union of 5108 loci. In
+exceptional_union.txt, a line i j k l d means
+    s^i t^j a^k b^l = exp(2*pi*i*d/420),
+with a nonzero integer character and maximum coefficient at most three.
+The union need not be minimal. Outside it, H and its conjugate have maximum
+regular extension exactly three. Exceptional parameters, lower-dimensional
+EEE presentations and nonregular orthogonal extensions are not classified.
+
+At parameters (w,w^2,w^4,w^7), w=exp(2*pi*i/17), none of the 5108 equations
+holds. This gives a maximal regular three-row example of minimal Butson level
+204. verification.json retains its exponent rows. The verifier checks all
+exceptional congruences, all chosen cycles and the minimal level using the
+dephased entries as cross ratios.
+
+Files. primary.cpp and audit.cpp are the full scans; run.py compiles and runs
+both, then verify.py. --verify-only checks retained data; --scan-only regenerates
+scans without running the verifier; --workers 1 (default) or 2 controls parallel
+processes. Reproduction took roughly ten minutes with two workers here.
+triple.txt stores the two nonconstant old rows as (s,t,a,b,root) exponent
+vectors, with root denominator 420. A row record has eleven blocks
+(group,s,t,a,b,root); group 0 is fixed to one and other group phases are free.
+The first coefficient in each group is one, and the first entry is one.
+Each *.txt.pairs file records rows against the first two old rows; *.txt stores
+final rows against all three. The exceptional0 and exceptional1 files record
+rejected equations at the two stages. All ten logs, execution.json, the
+original dimension-four example, and verification.json are retained.
+
+The lightweight verifier checks saved scan agreement and positive pair
+certificates. Regenerate both scans to repeat the exhaustive negative search.
+At the package root:
+    python3 run.py verify eee_generic
+    python3 run.py reproduce eee_generic
+
+
+FFF_GENERIC: BOTH SIX-PARAMETER TYPES (4 November 2026)
+
+Scope. Let T0(a) have rows (1,1,1,1), (1,-1,a,-a), (1,1,-1,-1),
+and let T1(a) have the same first two rows and third row (1,-1,-a,a).
+H_h(a,b,s,t,p,q)=[F3 | diag(1,s,t)T0(a) | diag(1,p,q)T_h(b)], h=0,1.
+These two six-parameter families cover every maximal-dimensional chosen FFF
+phase presentation up to ordinary equivalence. The classification into two
+maximal support types uses the original fff census. normal_forms.json retains
+the two original class records, supports and phase certificates. The verifier
+reconstructs their phase equations, verifies unimodularity and the Smith
+identities, and checks every allowed orientation and all four affine components
+for these representatives. It also checks the support transformations to the
+two displayed normal forms and recovery of all six free parameters.
+
+A-containing triples have each non-A quotient in at most two mu_66 cosets.
+The three entries 1,s,p of the second row and 1,t,q of each possible third row
+therefore exclude every new A quotient unless one of s,p,s/p,t,q,t/q belongs
+to mu_66. These are 396 explicit monomial equations. The paper supplies the
+short support-graph argument; no bounded search for A rows is substituted.
+
+The first two old rows are shared by both families. Two complete scans each
+exhaust 1,480,490 decorated initial presentations, then all prime-cycle covers
+against the second row and both third rows. The exact counts are:
+profile       B       C       D       E       F
+initial  712800  443520  166320  123200   34650
+pairs         0       0       0       0   61350
+H0 final      0       0       0       0       0
+H1 final      0       0       0       0       0
+
+The implementations differ in phase-component representation and cycle
+anchor/prime order. Their retained records agree. Every pair record is checked
+independently by literal Laurent-monomial prime-cycle covers. New row phases
+remain arbitrary units throughout. No numerical tolerance or search cap is used.
+Reproduction of both scans with two workers took about fourteen minutes here.
+
+The audit gives 21043 nonconstant old-parameter equations with constants in
+mu_210. Adjoining the 396 A equations, with 36 repetitions, gives 21403 equations.
+exceptional_union.txt uses denominator 2310: a line i j k l m n d means
+    a^i b^j s^k t^l p^m q^n = exp(2*pi*i*d/2310).
+The character is nonzero and every coefficient has absolute value at most four.
+This is a sufficient exceptional set, not a minimal one or an exact extension
+locus. Outside it both families have maximum regular extension exactly three.
+Exceptional parameters and the lower-dimensional FFF presentations remain open.
+
+At parameters (w,w^7,w^51,w^15,w^73,w^20), w=exp(2*pi*i/83), all 21403 equations
+fail. Both H0 and H1 are maximal regular three-row examples of minimal Butson
+level 498. verification.json stores their exponent rows; verify.py checks every
+exceptional congruence, the chosen cycles and the minimal levels using dephased
+cross ratios. No equivalence classification of these examples is claimed.
+
+Files. primary.cpp and audit.cpp perform the complete scans. run.py compiles
+and runs both, then verify.py. Options are --verify-only, --scan-only and
+--workers 1 (default) or 2. The input pair.txt stores the shared second old row;
+thirds.txt stores the two third rows, eleven lines each. Each line consists of
+(a,b,s,t,p,q,root) integer exponents, with root denominator 210.
+A pair record has eleven blocks (group,a,b,s,t,p,q,root). Group zero is fixed
+to one; the other group phases remain free. The first coefficient in each group
+is one. Final records have a family index 0 or 1 followed by the same row format.
+The final files are empty. All ten logs and their exceptional0/exceptional1
+files, execution.json, normal_forms.json and verification.json are retained.
+
+The lightweight verifier checks saved scan agreement and positive pair
+certificates. Regenerate both scans to repeat the exhaustive negative search.
+At the package root:
+    python3 run.py verify fff_generic
+    python3 run.py reproduce fff_generic
+
+DDD_ONE: ONE COMPLETE ONE-PARAMETER DDD CLASS (5 November 2026)
+
+Theorem 5.5 covers every label and parameter for the chosen support class
+3203. The pair (6,9) is common to the second and third quotients. The phase
+system has Smith diagonal 1,1,1,1,2. The 480 valid normalized quintic
+labellings and both binary choices give 960 one-parameter presentations.
+Row and column equivalence and reparametrization give 32 normalized
+descriptions, each with a fixed pair and one variable antipodal pair in
+the third row. The fixed pair is group 21 from ddd_finite. The launcher
+restores its previously certified 339008 pair records and checks their
+original checksum. Full regeneration of that earlier calculation is
+available through reproduce ddd_finite.
+
+For each pair record, scan.cpp integrates the cycle equations against the
+third row. A closing relation is z^k=c with c in mu_840 and |k|<=3.
+It retains every solution and the full free circle when the relation is
+an identity. The alternative forest solver uses the opposite cover order
+and a second splitting prime. Both give the same 4112 free and 48640
+specialized records. Specified parameter values lie in mu_60. The new row
+phases range over the full unit circle.
+
+Each fourth-row record has at most two groups. Two members of the same
+record at a fixed old parameter cannot be orthogonal because 11 is odd.
+The necessary orthogonality graphs compare coefficient sums for one or
+two phase signatures. Three or more signatures retain an edge. For the
+32 free graphs and the 1376 specialized graphs the primary clique test
+and the independent common-neighbour test both exclude a four-clique.
+The two primes can retain different superfluous edges. Only the upper
+bound is used. Every regular extension has at most six rows.
+
+class3203.json and labels.txt come from the earlier DDD certificates.
+normalize.py checks the transformations and builds target.txt. verify.py
+independently reconstructs the phase system, all label choices, and the
+literal cycle covers of all 52752 records. In extensions.txt each line
+gives the target index, z (-1 for a free old parameter, otherwise an
+exponent modulo 5040), eleven group labels, eleven powers of z, and eleven
+constant root exponents modulo 5040. audit_extensions.txt is the separately
+regenerated result. graphs.txt gives family, parameter, vertex count, edge
+count, coloring bound, clique number (search stops at eight if reached).
+audit_graphs.txt independently gives the bound by direct K4 exclusion.
+
+At the root:
+    python3 run.py verify ddd_one
+    python3 run.py reproduce ddd_one
+The first command rebuilds the independent graph check and verifies the
+retained records. The second repeats both scans and both graph checks.
+The bound applies to this chosen support for arbitrary unit phases.
+
+DDD_ONE: CLASS 3217 (5 November 2026)
+
+Theorem 5.6 determines the exact maximum extension throughout support class
+3217. The original first two quotients share the pair (9,10). Their quotient
+is fixed, and ordinary row and column equivalence gives the same fixed pair
+in group 21 used for class 3203. Reuse the 339008 verified pair records.
+
+The independent label calculation reconstructs all 480 pentagon labellings
+and both binary choices, hence all 960 presentations. These give 16
+normalized descriptions. The two unrestricted fourth-row scans agree on
+2976 free records and 32688 records at specified phases. The 16 free graphs
+and 496 specialized graphs give a first uniform six-row bound. Every
+specialized graph has clique number at most two for each splitting prime.
+
+Twelve descriptions have 248 free records each. Six circles share one
+five-column block, and 240 individual records are specializations of these
+circles. The remaining two individual rows give eight families to compare.
+circle_bounds.py checks containment by comparing monomials on both blocks.
+For every possible triple of the eight, it computes the three necessary
+orthogonality polynomials in z over Q(w), w a primitive 20th root. In
+624 triples a polynomial is a nonzero constant after removing monomial
+factors. For the other 48 a pair of quadratics has nonzero resultant.
+Exact polynomial pseudo-division gives constant common divisor in all
+672 triples. Two additional rows attaining five total rows for every z
+are checked against all ten row quotients for each of the 12 descriptions.
+
+The other four descriptions (zero-based indices 5,7,9,11) have a fourth
+row precisely at 40 values each, and their specialized graphs have no
+edges. Their residues r are 1,3,2,4 respectively. At z=exp(pi*i*m/30),
+m modulo 60, the exact condition is m not divisible by 5 and either
+m not congruent to r modulo 5 or m divisible by 3. Elsewhere they have
+maximum three. verification.json inside 3217 records all exceptional
+exponents, all twelve symbolic five-row witnesses, and the exact counts.
+
+The commands verify ddd_one and reproduce ddd_one cover both 3203 and
+3217, sharing one copy of the pair input and the six original sources plus
+circle_bounds.py. A prepared component supports run.py --class-id 3217
+or run.py --class-id 3217 --verify-only for this class alone.
+
+DDD_pilots: two- and three-parameter classes (November 5, 2026)
+
+3250 (two free phases): all 144 labels reduce to three descriptions with
+fixed pair group 21. Every extension has at most nine rows, for all phases.
+Two exhaustive refinements give 75,884 records. Each description has 136
+curves and 3,280 points. All 10,251 compatibility graphs give clique bound
+six. This is an upper bound; a sharp nine-row example has not been proved.
+
+3297 (three free phases): all 144 labels reduce to six forms. Five rows are
+attainable everywhere, and the maximum is five off 1,982 explicit monomial
+equations. On all ten slices s^10=-1 the row count is at most nine. The two
+refinements agree on 221,196 records and the 4,335 domain graphs. Exact
+cyclotomic gcd checks deal with the three remaining curves. By torsion-torus
+projection a ten-row extension can only occur at finitely many roots of unity
+in s. Determining those roots and deciding square completion there remain open.
+
+Timings on the development machine (elapsed seconds, not a cost forecast).
+Class 3250: a clean sequential replay including compilation, both scans, both
+graph tests, and the literal-cover and phase-domain checks took 212.09 s; it
+reused the earlier certified fixed pair. Class 3297: the two generic scans
+together took 464.61 s on two workers. For the ten-slice calculation the two
+refinements took 161.41 s and 345.26 s, with overlapping execution; domain
+construction and the graph calculations took another few seconds. The times
+exclude deriving the proofs, writing the paper, and preparing the package.
+
+The fixed-pair census uses the two old row character vectors from the free
+columns of the class Smith matrix V. A pair is fixed up to scalar exactly
+when the coordinate differences for its quotient are constant in the column
+index. Among the 190 one-parameter support classes, 108 have such a pair
+and 82 do not. Among the 41 two-parameter classes, 8 have one and 33 do not.
+The fixed eight are 3063, 3119, 3232, 3242, 3246, 3250, 3258 and 3268.
+All three three-parameter classes (3286, 3297 and 3299) have a moving pair.
+The pilot data include census_groups.json with the individual class IDs.

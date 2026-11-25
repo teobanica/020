@@ -1,0 +1,3 @@
+#define NO_MAIN
+#include "search.cpp"
+int main(int argc,char**argv){assert(argc==5);ifstream in(argv[1]);for(auto&r:old)for(auto&x:r){in>>x[3];x[3]*=21;for(int k=0;k<3;k++)in>>x[k];}assert(in);ifstream list(argv[2]);output.open(argv[3]);int id,c;long long n=0;while(list>>id>>c){Family f;for(int&x:f.b)list>>x;for(auto&v:f.x){v.fill(0);list>>v[3];}assert(list);State s;cover(2047,s,f,0);n++;if(n%100==0)cerr<<"candidates "<<n<<" pairs "<<pairs.size()<<" sixth "<<finals.size()<<" nodes "<<nodes[0]<<' '<<nodes[1]<<endl;}output.flush();assert(output);ofstream saved(argv[4]);for(auto&k:pairs){for(auto x:k)saved<<x<<' ';saved<<'\n';}saved.flush();assert(saved);cout<<"candidates "<<n<<" pairs "<<pairs.size()<<" sixth "<<finals.size()<<" nodes "<<nodes[0]<<' '<<nodes[1]<<endl;}
